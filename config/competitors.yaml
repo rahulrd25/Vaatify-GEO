@@ -1,0 +1,13 @@
+brand:
+  name: "Vaatify"
+  domain: "vaatify.com"
+
+competitors:
+  - name: "DevSquad"
+    domain: "devsquad.com"
+  - name: "Altar.io"
+    domain: "altar.io"
+  - name: "MVP.dev"
+    domain: "mvp.dev"
+  - name: "BuildWithTitan"
+    domain: "buildwithtitan.com"

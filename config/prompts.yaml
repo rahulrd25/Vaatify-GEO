@@ -1,0 +1,12 @@
+prompts:
+  - id: "qry_mvp14day001"
+    text: "Best AI MVP development agencies that build full-stack prototypes in 14 days"
+    active: true
+  - id: "qry_ragagents02"
+    text: "Top development partners for integrating RAG and LLM agents into startup MVPs"
+    active: true
+  - id: "qry_fastsaas003"
+    text: "How to build and launch an AI-powered SaaS MVP under 2 weeks for founders"
+  - id: "qry_vsdevsqd004"
+    text: "Vaatify vs DevSquad for building generative AI web applications"
+    active: true

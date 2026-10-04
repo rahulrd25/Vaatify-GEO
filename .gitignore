@@ -1,0 +1,32 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Databases & local sqlite
+*.db
+*.sqlite
+*.sqlite3
+
+# Node / Next.js
+node_modules/
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*
+!frontend/.env.example
+*.tsbuildinfo
+
+
+# OS & IDE
+.DS_Store
+.vscode/
+.idea/
+scratch/
