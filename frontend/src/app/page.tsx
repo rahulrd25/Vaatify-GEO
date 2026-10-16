@@ -44,45 +44,41 @@ export default function Home() {
 
 
   const fetchBackendData = useCallback(async () => {
-    try {
+    const headers = { 'X-API-Key': apiKey };
+
+    await Promise.allSettled([
       // 1. Fetch Metrics Overview
-      const metricsRes = await fetch(apiUrl('/api/v1/metrics/overview'), {
-        headers: { 'X-API-Key': apiKey },
-      });
-      if (metricsRes.ok) {
-        const data = await metricsRes.json();
-        setMetrics(data);
-      }
+      fetch(apiUrl('/api/v1/metrics/overview'), { headers })
+        .then(async (res) => {
+          if (res.ok) setMetrics(await res.json());
+          else console.warn(`Metrics fetch responded with status ${res.status}`);
+        })
+        .catch((err) => console.warn('Metrics endpoint connection notice:', err)),
 
       // 2. Fetch Prompts
-      const promptsRes = await fetch(apiUrl('/api/v1/prompts'), {
-        headers: { 'X-API-Key': apiKey },
-      });
-      if (promptsRes.ok) {
-        const data = await promptsRes.json();
-        setPrompts(data);
-      }
+      fetch(apiUrl('/api/v1/prompts'), { headers })
+        .then(async (res) => {
+          if (res.ok) setPrompts(await res.json());
+          else console.warn(`Prompts fetch responded with status ${res.status}`);
+        })
+        .catch((err) => console.warn('Prompts endpoint connection notice:', err)),
 
       // 3. Fetch Recent Runs
-      const runsRes = await fetch(apiUrl('/api/v1/runs'), {
-        headers: { 'X-API-Key': apiKey },
-      });
-      if (runsRes.ok) {
-        const data = await runsRes.json();
-        setRuns(data);
-      }
+      fetch(apiUrl('/api/v1/runs'), { headers })
+        .then(async (res) => {
+          if (res.ok) setRuns(await res.json());
+          else console.warn(`Runs fetch responded with status ${res.status}`);
+        })
+        .catch((err) => console.warn('Runs endpoint connection notice:', err)),
 
       // 4. Fetch Brand Profile
-      const profileRes = await fetch(apiUrl('/api/v1/profile'), {
-        headers: { 'X-API-Key': apiKey },
-      });
-      if (profileRes.ok) {
-        const data = await profileRes.json();
-        setBrandProfile(data);
-      }
-    } catch (err) {
-      console.warn('Backend connection warning:', err);
-    }
+      fetch(apiUrl('/api/v1/profile'), { headers })
+        .then(async (res) => {
+          if (res.ok) setBrandProfile(await res.json());
+          else console.warn(`Profile fetch responded with status ${res.status}`);
+        })
+        .catch((err) => console.warn('Profile endpoint connection notice:', err)),
+    ]);
   }, [apiKey]);
 
   useEffect(() => {
@@ -172,16 +168,19 @@ export default function Home() {
           </div>
 
           <div className={currentTab === 'overview' ? 'block' : 'hidden'}>
-            <OverviewView
-              brandName={brandProfile.brand.name || 'Vaatify'}
-              overallSoV={metrics.overall_share_of_voice ?? 0}
-              totalEvaluations={metrics.total_evaluations ?? 0}
-              activePrompts={metrics.active_prompts_count ?? prompts.length ?? 0}
-              flipsCount={metrics.flips_count ?? 0}
-              engineRates={metrics.per_engine_rates || []}
-              competitorRanking={metrics.competitor_ranking || []}
-            />
+            {currentTab === 'overview' && (
+              <OverviewView
+                brandName={brandProfile.brand.name || 'Vaatify'}
+                overallSoV={metrics.overall_share_of_voice ?? 0}
+                totalEvaluations={metrics.total_evaluations ?? 0}
+                activePrompts={metrics.active_prompts_count ?? prompts.length ?? 0}
+                flipsCount={metrics.flips_count ?? 0}
+                engineRates={metrics.per_engine_rates || []}
+                competitorRanking={metrics.competitor_ranking || []}
+              />
+            )}
           </div>
+
 
           <div className={currentTab === 'queries' ? 'block' : 'hidden'}>
             <QueriesView

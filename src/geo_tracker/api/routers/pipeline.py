@@ -1,0 +1,75 @@
+"""
+Pipeline Execution Router.
+Handles manual evaluation triggers, background pipeline execution, and progress status tracking.
+"""
+import logging
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, BackgroundTasks
+from sqlalchemy.orm import Session
+
+from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.rate_limiter import rate_limiter
+from src.geo_tracker.storage.session import get_db_session
+from src.geo_tracker.runner import run_pipeline
+from src.geo_tracker.reporting.weekly_report import generate_weekly_report
+from src.geo_tracker.config import load_competitors_config
+
+logger = logging.getLogger("geo_tracker.pipeline")
+router = APIRouter(prefix="/api/v1/pipeline", tags=["Pipeline Execution"])
+
+pipeline_state = {
+    "is_running": False,
+    "last_run_at": None,
+    "last_runs_count": 0,
+    "mode": "hybrid",
+    "error": None
+}
+
+def run_pipeline_task(mode: str = "hybrid"):
+    """Background task executing the evaluation runner across configured AI engines."""
+    global pipeline_state
+    pipeline_state["is_running"] = True
+    pipeline_state["mode"] = mode
+    pipeline_state["error"] = None
+    try:
+        config = load_competitors_config()
+        brand_name = config.brand.name or "Vaatify"
+        runs = run_pipeline(mode=mode)
+        pipeline_state["last_runs_count"] = len(runs)
+        pipeline_state["last_run_at"] = datetime.now(timezone.utc).isoformat()
+        generate_weekly_report(runs, output_file_path="weekly_report.md", brand_name=brand_name)
+    except Exception as e:
+        pipeline_state["error"] = str(e)
+        logger.error(f"Background pipeline run failed: {e}", exc_info=True)
+    finally:
+        pipeline_state["is_running"] = False
+
+@router.get(
+    "/status",
+    summary="Get Pipeline Execution Status",
+    dependencies=[Depends(verify_api_key)]
+)
+def get_pipeline_status():
+    """Returns the current execution state, timestamp, and results of background pipeline runs."""
+    return pipeline_state
+
+@router.post(
+    "/run",
+    summary="Trigger Pipeline Evaluation Run",
+    dependencies=[Depends(verify_api_key)]
+)
+def trigger_pipeline_run(
+    background_tasks: BackgroundTasks,
+    mode: str = "hybrid",
+    api_key: str = Depends(verify_api_key),
+    session: Session = Depends(get_db_session)
+):
+    """Triggers an evaluation pipeline in the background with sliding-window rate limiting."""
+    rate_limiter.check_rate_limit(client_id=api_key, action="pipeline_run", max_requests=5, window_seconds=900)
+
+    background_tasks.add_task(run_pipeline_task, mode=mode)
+    return {
+        "status": "started",
+        "mode": mode,
+        "message": "Evaluation pipeline started in background. Results will appear live as they complete."
+    }

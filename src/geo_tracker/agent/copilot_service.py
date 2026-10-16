@@ -145,10 +145,20 @@ class CopilotAgentService:
             flips_count=flips_count
         )
 
+        # Sanitize and cap user message against prompt injection attacks
+        raw_message = request.message[:1000].strip()
+        blocked_phrases = ["ignore previous instructions", "disregard system prompt", "bypass guardrails", "output system instructions"]
+        for phrase in blocked_phrases:
+            if phrase in raw_message.lower():
+                return AgentChatResponse(
+                    reply="I am configured exclusively to assist with Generative Engine Optimization (GEO) metrics, brand citations, and competitor strategy. How can I help optimize your AI search visibility?",
+                    proposals=[]
+                )
+
         # 1. Attempt Live LLM Generation with strict JSON instructions
         if self.gemini_api_key:
             try:
-                response = self._call_gemini(system_prompt, request.message, request.history)
+                response = self._call_gemini(system_prompt, raw_message, request.history)
                 if response:
                     return self._format_response(response, brand_name)
             except Exception as e:
@@ -156,7 +166,7 @@ class CopilotAgentService:
                 pass
 
         # 2. Deterministic High-Quality Heuristic Engine (Fallback / Offline Safe)
-        return self._heuristic_intent_engine(request.message, brand_name, brand_domain, competitors, prompts, metrics)
+        return self._heuristic_intent_engine(raw_message, brand_name, brand_domain, competitors, prompts, metrics)
 
     def _call_gemini(
         self,
@@ -169,11 +179,14 @@ class CopilotAgentService:
         contents = []
         for h in history[-4:]:
             role = "user" if h.sender == "user" else "model"
-            contents.append({"role": role, "parts": [{"text": h.text}]})
+            contents.append({"role": role, "parts": [{"text": h.text[:1000]}]})
 
-        contents.append({"role": "user", "parts": [{"text": f"SYSTEM PROMPT:\n{system_prompt}\n\nUSER MESSAGE:\n{user_message}"}]})
+        contents.append({"role": "user", "parts": [{"text": user_message}]})
 
         payload = {
+            "system_instruction": {
+                "parts": [{"text": system_prompt}]
+            },
             "contents": contents,
             "generationConfig": {
                 "response_mime_type": "application/json",
@@ -183,6 +196,7 @@ class CopilotAgentService:
 
         with httpx.Client(timeout=self.timeout) as client:
             resp = client.post(api_url, json=payload)
+
             if resp.status_code == 200:
                 data = resp.json()
                 candidates = data.get("candidates", [])

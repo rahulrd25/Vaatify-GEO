@@ -66,8 +66,8 @@ export default function AnalyticsCharts({
             Live Metrics
           </span>
         </div>
-        <div className="h-60 w-full">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-60 w-full min-h-[240px]">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={240}>
             <BarChart data={formattedEngineData} margin={{ top: 10, right: 20, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
               <XAxis dataKey="engine" stroke="#64748b" fontSize={11} tickLine={false} />
@@ -91,13 +91,14 @@ export default function AnalyticsCharts({
         <div>
           <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-1">Competitor Citation Share</h3>
           <p className="text-xs text-gray-500 mb-4">Comparison vs tracked competitors</p>
-          <div className="h-44 w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-44 w-full min-h-[176px]">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={176}>
               <PieChart>
                 <Pie
                   data={competitorData}
                   cx="50%"
                   cy="50%"
+
                   innerRadius={45}
                   outerRadius={70}
                   paddingAngle={3}

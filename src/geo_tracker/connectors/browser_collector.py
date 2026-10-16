@@ -41,7 +41,12 @@ class BrowserCollector(BaseConnector):
             return self._fallback_serp_extractor(prompt_text)
 
     def _fetch_google_ai_overview(self, prompt_text: str) -> NormalizedResponse:
-        """Attempts browser navigation via Playwright if installed/available."""
+        """Attempts browser navigation via Playwright if installed/available with input validation."""
+        # Sanitize and cap query string to prevent SSRF / payload expansion
+        safe_query = re.sub(r"[\r\n\t\x00-\x1f]", " ", prompt_text)[:250].strip()
+        if not safe_query:
+            raise BrowserCollectorError("Empty query after sanitization.")
+
         try:
             from playwright.sync_api import sync_playwright  # type: ignore
             
@@ -57,8 +62,9 @@ class BrowserCollector(BaseConnector):
                 page = context.new_page()
                 page.set_default_timeout(int(self.timeout * 1000))
 
-                search_url = f"https://www.google.com/search?q={quote_plus(prompt_text)}&hl=en&gl=us"
+                search_url = f"https://www.google.com/search?q={quote_plus(safe_query)}&hl=en&gl=us"
                 page.goto(search_url, wait_until="domcontentloaded")
+
 
                 # Allow AI Overview container to stream/render
                 page.wait_for_timeout(3000)

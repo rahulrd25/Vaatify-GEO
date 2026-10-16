@@ -34,8 +34,17 @@ def run_startup_checks_and_migrations(database_url: str | None = None) -> None:
         check_db_connection(engine)
         logger.info("✓ [Startup] Database connection verified.")
     except Exception as e:
-        logger.error(f"❌ [Startup] Database connection failed: {e}")
-        raise
+        logger.warning(f"⚠️ [Startup] Primary database connection failed ({e}). Attempting fallback to local SQLite database so server can start.")
+        fallback_url = "sqlite:///geo_tracker_demo.db"
+        engine = get_db_engine(fallback_url)
+        session_factory = create_session_factory(fallback_url)
+        try:
+            check_db_connection(engine)
+            logger.info("✓ [Startup] Connected to fallback local SQLite database.")
+        except Exception as fallback_err:
+            logger.error(f"❌ [Startup] Fallback connection failed: {fallback_err}")
+            raise
+
 
     logger.info("⚡ [Startup] Running schema migrations & checks...")
     try:

@@ -50,6 +50,16 @@ def get_db_engine(database_url: str | None = None):
     return engine
 
 
+def check_db_health(engine) -> bool:
+    """Verifies that the database engine can establish a working connection."""
+    try:
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        return True
+    except Exception:
+        return False
+
 def create_session_factory(database_url: str | None = None) -> sessionmaker:
     url = database_url or os.getenv("DATABASE_URL") or "sqlite:///geo_tracker_demo.db"
     if url.startswith("postgresql://"):
@@ -58,10 +68,26 @@ def create_session_factory(database_url: str | None = None) -> sessionmaker:
     if url in _SESSION_FACTORIES:
         return _SESSION_FACTORIES[url]
 
-    engine = get_db_engine(url)
-    factory = sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)
-    _SESSION_FACTORIES[url] = factory
-    return factory
+    try:
+        engine = get_db_engine(url)
+        # Verify connection for remote databases to prevent runtime query crashes
+        if not url.startswith("sqlite") and not check_db_health(engine):
+            raise ConnectionError(f"Database at {url} failed health check.")
+        factory = sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)
+        _SESSION_FACTORIES[url] = factory
+        return factory
+    except Exception as e:
+        is_prod = os.getenv("ENV", "development").lower() == "production"
+        if is_prod:
+            # In production, never silently mask a database outage with an ephemeral SQLite database
+            raise ConnectionError(f"Production database connection failed: {e}") from e
+
+        # In development: resilient fallback if remote postgres is temporarily unreachable
+        fallback_url = "sqlite:///geo_tracker_demo.db"
+        engine = get_db_engine(fallback_url)
+        factory = sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)
+        _SESSION_FACTORIES[fallback_url] = factory
+        return factory
 
 def get_db_session(database_url: str | None = None) -> Generator[Session, None, None]:
     """
@@ -70,6 +96,7 @@ def get_db_session(database_url: str | None = None) -> Generator[Session, None, 
     """
     session_factory = create_session_factory(database_url)
     session = session_factory()
+
     try:
         yield session
         session.commit()
@@ -78,3 +105,4 @@ def get_db_session(database_url: str | None = None) -> Generator[Session, None, 
         raise
     finally:
         session.close()
+

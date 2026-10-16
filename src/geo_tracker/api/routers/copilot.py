@@ -1,0 +1,117 @@
+"""
+Agent Copilot & Autonomous Recommendations Router.
+Handles natural language GEO advisory chat, structured proposal generation, and optimization suggestions.
+"""
+import datetime
+from typing import List
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.rate_limiter import rate_limiter
+from src.geo_tracker.storage.session import get_db_session
+from src.geo_tracker.storage.repository import Repository
+from src.geo_tracker.storage.models import BrandProfileModel, AgentRecommendationModel
+from src.geo_tracker.agent.copilot_service import CopilotAgentService, AgentChatRequest
+from src.geo_tracker.aggregation.citation_metrics import (
+    calculate_overall_citation_rate,
+    detect_citation_flips
+)
+
+router = APIRouter(prefix="/api/v1/agent", tags=["Agent Copilot"])
+
+@router.get(
+    "/recommendations",
+    summary="List Strategic GEO Recommendations",
+    dependencies=[Depends(verify_api_key)]
+)
+def list_recommendations(session: Session = Depends(get_db_session)):
+    """Returns AI-generated recommendations to close content gaps and increase citation likelihood."""
+    recs = session.query(AgentRecommendationModel).order_by(AgentRecommendationModel.created_at.desc()).all()
+    if not recs:
+        # Seed initial proactive recommendations if table is empty
+        default_recs = [
+            AgentRecommendationModel(
+                recommendation_type="citation_builder",
+                title="Add Comparison Schema to Landing Page",
+                suggestion_text="Perplexity frequently references structured tabular data. Adding a schema-marked comparison table can increase citation probability by 35%.",
+                priority="high",
+                status="pending",
+                created_at=datetime.datetime.now(datetime.timezone.utc)
+            ),
+            AgentRecommendationModel(
+                recommendation_type="content_gap",
+                title="Publish 'Enterprise vs Open-Source' Benchmark",
+                suggestion_text="Claude currently references competitors for open-source AI agent questions. An objective benchmark post would win this citation.",
+                priority="medium",
+                status="pending",
+                created_at=datetime.datetime.now(datetime.timezone.utc)
+            )
+        ]
+        session.add_all(default_recs)
+        session.commit()
+        recs = default_recs
+
+    return [
+        {
+            "id": r.id,
+            "prompt_id": r.prompt_id,
+            "recommendation_type": r.recommendation_type,
+            "title": r.title,
+            "suggestion_text": r.suggestion_text,
+            "priority": r.priority,
+            "status": r.status,
+            "created_at": r.created_at.isoformat() if r.created_at else None
+        }
+        for r in recs
+    ]
+
+@router.post(
+    "/chat",
+    summary="Agent Copilot Chat & Structured Reasoning",
+    dependencies=[Depends(verify_api_key)]
+)
+def agent_chat(
+    request: dict,
+    api_key: str = Depends(verify_api_key),
+    session: Session = Depends(get_db_session)
+):
+    """Executes conversational Copilot reasoning with prompt injection guardrails and rate limiting."""
+    rate_limiter.check_rate_limit(client_id=api_key, action="agent_chat", max_requests=30, window_seconds=60)
+
+    # Fetch live context from database
+    brand_profile_model = session.query(BrandProfileModel).first()
+    brand_name = brand_profile_model.name if brand_profile_model else "Vaatify"
+    brand_domain = brand_profile_model.domain if brand_profile_model else "vaatify.com"
+    competitors = [
+        {"name": c.name, "domain": c.domain}
+        for c in (brand_profile_model.competitors if brand_profile_model else [])
+        if c.is_active
+    ]
+    brand_profile = {
+        "brand": {"name": brand_name, "domain": brand_domain},
+        "competitors": competitors
+    }
+
+    repo = Repository(session)
+    active_prompts = [
+        {"id": p.id, "prompt_text": p.prompt_text, "brand": p.brand}
+        for p in repo.get_active_prompts()
+    ]
+
+    all_runs = repo.get_all_runs()
+    metrics = {
+        "overall_share_of_voice": round(calculate_overall_citation_rate(all_runs), 2),
+        "total_evaluations": len(all_runs),
+        "flips_count": len(detect_citation_flips(all_runs))
+    }
+
+    chat_req = AgentChatRequest.model_validate(request)
+    service = CopilotAgentService()
+    res = service.process_chat(
+        request=chat_req,
+        brand_profile=brand_profile,
+        prompts=active_prompts,
+        metrics=metrics
+    )
+    return res.model_dump()
