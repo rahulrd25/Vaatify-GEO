@@ -21,27 +21,14 @@ export default function AgentView({
   isLoading,
 }: AgentViewProps) {
   return (
-    <div className="space-y-4">
-      {/* Clean, Simple Header */}
-      <div>
-        <h2 className="text-base font-bold text-slate-900 tracking-tight">
-          GEO Agent
-        </h2>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Ask questions, add target search queries, or manage competitors for {brandProfile.brand.name}
-        </p>
-      </div>
-
-      {/* Main Agent Copilot Component */}
-      <AgentCopilot
-        apiKey={apiKey}
-        brandProfile={brandProfile}
-        prompts={prompts}
-        metrics={metrics}
-        onRefresh={onRefresh}
-        onTriggerRun={onTriggerRun}
-        isLoading={isLoading}
-      />
-    </div>
+    <AgentCopilot
+      apiKey={apiKey}
+      brandProfile={brandProfile}
+      prompts={prompts}
+      metrics={metrics}
+      onRefresh={onRefresh}
+      onTriggerRun={onTriggerRun}
+      isLoading={isLoading}
+    />
   );
 }

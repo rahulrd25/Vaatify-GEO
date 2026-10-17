@@ -228,7 +228,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
         <div className="card-white rounded-xl p-12 text-center border border-slate-200">
           <p className="text-xs text-slate-500">
             {runs.length === 0
-              ? 'No evaluation batches recorded yet. Run a search evaluation from Agent Copilot to start logging.'
+              ? 'No evaluation batches recorded yet. Run a search evaluation from Copilot to start logging.'
               : 'No evaluation runs match your current search or engine filter.'}
           </p>
         </div>

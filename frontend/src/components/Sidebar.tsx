@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Sparkles, Search, BarChart3, FileText, Activity, SlidersHorizontal } from 'lucide-react';
 
 export type NavTab = 'agent' | 'queries' | 'overview' | 'explorer' | 'drift' | 'settings';
@@ -7,7 +8,7 @@ export type NavTab = 'agent' | 'queries' | 'overview' | 'explorer' | 'drift' | '
 interface SidebarProps {
   currentTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
-  brandName: string;
+  brandName?: string;
   queriesCount: number;
   alertsCount: number;
 }
@@ -15,12 +16,11 @@ interface SidebarProps {
 export default function Sidebar({
   currentTab,
   onSelectTab,
-  brandName,
   queriesCount,
   alertsCount,
 }: SidebarProps) {
   const navItems = [
-    { id: 'agent' as NavTab, label: 'GEO Agent Copilot', icon: Sparkles },
+    { id: 'agent' as NavTab, label: 'AI Copilot', icon: Sparkles },
     { id: 'queries' as NavTab, label: 'Target Queries', icon: Search, badge: queriesCount },
     { id: 'overview' as NavTab, label: 'Visibility Dashboard', icon: BarChart3 },
     { id: 'explorer' as NavTab, label: 'Citation Audit Log', icon: FileText },
@@ -33,17 +33,20 @@ export default function Sidebar({
       {/* Brand & Workspace Header */}
       <div className="p-4 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded bg-orange-600 text-white font-bold flex items-center justify-center text-xs tracking-wider shadow-2xs">
-            V
-          </div>
+          <Image
+            src="/logo-icon.png"
+            alt="Vaatify GEO"
+            width={28}
+            height={28}
+            priority
+            className="h-7 w-7 object-contain shrink-0"
+          />
           <div>
-            <div className="text-xs font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
+            <div className="text-sm font-bold text-slate-900 tracking-tight leading-tight flex items-center gap-1">
               <span>Vaatify</span>
-              <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-orange-50 text-orange-700 border border-orange-200">
-                GEO
-              </span>
+              <span className="text-[#FD5002] font-black">GEO</span>
             </div>
-            <p className="text-[11px] text-slate-500">AI Search Visibility Platform</p>
+            <p className="text-[11px] text-slate-500 font-medium leading-tight">AI Search Visibility Platform</p>
           </div>
         </div>
       </div>

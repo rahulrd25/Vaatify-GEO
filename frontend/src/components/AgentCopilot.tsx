@@ -4,9 +4,9 @@ import { useState, useRef, useEffect, ReactNode, KeyboardEvent } from 'react';
 import { 
   Sparkles, Send, Play, CheckCircle2, 
   Loader2, Database, Search, Users, Activity, CornerDownLeft,
-  Edit2, Check, X, Plus, AlertCircle, Trash2
+  Edit2, Check, Plus, Trash2
 } from 'lucide-react';
-import { PromptItem, BrandProfile, OverviewMetrics } from '@/types';
+import { PromptItem, BrandProfile, OverviewMetrics, RunItem } from '@/types';
 import { apiUrl } from '@/lib/api';
 
 interface MetricChip {
@@ -50,6 +50,14 @@ interface AgentCopilotProps {
   onRefresh: () => void;
   onTriggerRun: () => Promise<void> | void;
   isLoading: boolean;
+}
+
+function generateId(prefix: string): string {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function getCurrentTimeString(): string {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
 // Simple Markdown Formatter
@@ -138,7 +146,6 @@ export default function AgentCopilot({
   metrics,
   onRefresh,
   onTriggerRun,
-  isLoading,
 }: AgentCopilotProps) {
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -369,10 +376,10 @@ export default function AgentCopilot({
     if (!query || isProcessing) return;
 
     const userMsg: AgentMessage = {
-      id: `user-${Date.now()}`,
+      id: generateId('user'),
       sender: 'user',
       text: query,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: getCurrentTimeString(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -383,14 +390,14 @@ export default function AgentCopilot({
 
     // 1. Evaluation Pipeline Execution (Special Tool Call)
     if (lower.includes('run evaluation') || lower.includes('run pipeline') || lower.includes('run search evaluation') || lower.includes('run full')) {
-      const agentMsgId = `agent-${Date.now()}`;
+      const agentMsgId = generateId('agent');
       setMessages((prev) => [
         ...prev,
         {
           id: agentMsgId,
           sender: 'agent',
           text: `Executing search evaluation across ChatGPT, Gemini, and Google AI Overviews for **${brandProfile.brand.name}**...`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          timestamp: getCurrentTimeString(),
           toolCall: {
             name: 'execute_geo_pipeline',
             status: 'running',
@@ -404,11 +411,8 @@ export default function AgentCopilot({
 
         // Fetch fresh run counts and metrics
         let sov = metrics.overall_share_of_voice ?? 0;
-        let totalRunsCount = 0;
         let recentCitationsCount = 0;
-        let recentMentionsCount = 0;
-        let rawRuns: any[] = [];
-        let engineRates: any[] = [];
+        let rawRuns: RunItem[] = [];
         let topCompetitorsList: [string, number][] = [];
 
         try {
@@ -419,18 +423,15 @@ export default function AgentCopilot({
           if (freshMetricsRes.ok) {
             const mData = await freshMetricsRes.json();
             sov = mData.overall_share_of_voice ?? sov;
-            engineRates = mData.per_engine_rates || [];
           }
           if (freshRunsRes.ok) {
             rawRuns = await freshRunsRes.json();
-            totalRunsCount = rawRuns.length;
-            recentCitationsCount = rawRuns.filter((r: any) => r.brand_cited).length;
-            recentMentionsCount = rawRuns.filter((r: any) => r.brand_mentioned).length;
+            recentCitationsCount = rawRuns.filter((r) => r.brand_cited).length;
 
             const compMap: Record<string, number> = {};
-            rawRuns.forEach((r: any) => {
-              (r.competitors_cited || []).forEach((c: any) => {
-                const name = typeof c === 'string' ? c : c.name;
+            rawRuns.forEach((r) => {
+              (r.competitors_cited || []).forEach((c) => {
+                const name = typeof c === 'string' ? c : (c as { name?: string }).name;
                 if (name) compMap[name] = (compMap[name] || 0) + 1;
               });
             });
@@ -523,6 +524,7 @@ export default function AgentCopilot({
         body: JSON.stringify({
           message: query,
           history: historyPayload,
+          active_prompts: (prompts || []).map((p) => p.prompt_text),
         }),
       });
 
@@ -534,7 +536,7 @@ export default function AgentCopilot({
           title?: string;
           data?: { prompt_text?: string; name?: string; domain?: string };
         }) => ({
-          id: p.id || `prop-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          id: p.id || generateId('prop'),
           type: p.type,
           title: p.title || p.data?.prompt_text || `${p.data?.name} (${p.data?.domain})`,
           data: p.data || {},
@@ -545,10 +547,10 @@ export default function AgentCopilot({
         setMessages((prev) => [
           ...prev,
           {
-            id: `agent-${Date.now()}`,
+            id: generateId('agent'),
             sender: 'agent',
             text: data.reply || 'I processed your request.',
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: getCurrentTimeString(),
             proposals: formattedProposals.length > 0 ? formattedProposals : undefined,
             chips: data.chips && data.chips.length > 0 ? data.chips : undefined,
           }
@@ -561,10 +563,10 @@ export default function AgentCopilot({
       setMessages((prev) => [
         ...prev,
         {
-          id: `agent-${Date.now()}`,
+          id: generateId('agent'),
           sender: 'agent',
           text: `I'm tracking AI search visibility for **${brandProfile.brand.name}** (\`${brandProfile.brand.domain}\`).\n\nYou can ask me to suggest target buyer queries, track competitors, or check your current citation share.`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          timestamp: getCurrentTimeString(),
         }
       ]);
     } finally {
@@ -587,7 +589,7 @@ export default function AgentCopilot({
           <div className="h-6 w-6 rounded-md bg-orange-600 text-white flex items-center justify-center shadow-2xs">
             <Sparkles className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="text-xs font-semibold text-slate-900">{brandProfile.brand.name} Assistant</span>
+          <span className="text-xs font-semibold text-slate-900">AI Copilot</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -601,15 +603,6 @@ export default function AgentCopilot({
               <span>Clear</span>
             </button>
           )}
-
-          <button
-            onClick={() => handleSendMessage('Run full search evaluation across all engines')}
-            disabled={isProcessing || isLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 border border-orange-200 hover:bg-orange-100 text-orange-800 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
-          >
-            <Play className="h-3 w-3 fill-current" />
-            <span>Run Evaluation</span>
-          </button>
         </div>
       </div>
 
@@ -820,7 +813,7 @@ export default function AgentCopilot({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`Ask a question or instruct the agent (e.g. "Suggest 3 buyer queries", "Add competitor: LaunchCode", "Run evaluation")...`}
+            placeholder={`Ask a question or enter an instruction (e.g. "Suggest 3 buyer queries", "Add competitor: DevSquad", "Run evaluation")...`}
             className="w-full px-3 py-1.5 bg-transparent border-0 text-slate-900 text-sm focus:outline-none resize-none placeholder:text-slate-400 leading-relaxed"
           />
 
