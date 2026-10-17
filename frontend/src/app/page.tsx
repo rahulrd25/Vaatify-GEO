@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Sidebar, { NavTab } from '@/components/Sidebar';
-import TopNavbar from '@/components/TopNavbar';
 import AgentView from '@/components/views/AgentView';
 import OverviewView from '@/components/views/OverviewView';
 import QueriesView from '@/components/views/QueriesView';
@@ -14,7 +13,9 @@ import { apiUrl } from '@/lib/api';
 
 
 export default function Home() {
-  const [apiKey, setApiKey] = useState('geo_DgroTYxwQp7dl5prrTMzjITh_Imt-BlsTbIp-TuBpPA');
+  const [apiKey] = useState(
+    process.env.NEXT_PUBLIC_GEO_API_KEY || 'geo_DgroTYxwQp7dl5prrTMzjITh_Imt-BlsTbIp-TuBpPA'
+  );
   const [currentTab, setCurrentTab] = useState<NavTab>('agent');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -145,15 +146,6 @@ export default function Home() {
 
       {/* 2. Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <TopNavbar
-          apiKey={apiKey}
-          setApiKey={setApiKey}
-          brandName={brandProfile.brand.name || 'Vaatify'}
-          brandDomain={brandProfile.brand.domain || 'vaatify.com'}
-          onTriggerRun={handleTriggerRun}
-          isLoading={isLoading}
-        />
-
         <main className="flex-1 p-6 md:p-8 max-w-6xl w-full mx-auto">
           <div className={currentTab === 'agent' ? 'block' : 'hidden'}>
             <AgentView

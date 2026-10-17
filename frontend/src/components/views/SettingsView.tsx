@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Building2,
   Users,
@@ -12,8 +12,7 @@ import {
   Play,
   Calendar,
   ShieldCheck,
-  Globe,
-  ArrowRight
+  Globe
 } from 'lucide-react';
 import { BrandProfile, MonitoringSchedule } from '@/types';
 import { apiUrl } from '@/lib/api';
@@ -42,11 +41,7 @@ export default function SettingsView({
   const [isTriggering, setIsTriggering] = useState(false);
   const [scheduleMsg, setScheduleMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchSchedule();
-  }, [apiKey]);
-
-  const fetchSchedule = async () => {
+  const fetchSchedule = useCallback(async () => {
     try {
       const res = await fetch(apiUrl('/api/v1/schedule'), {
         headers: { 'X-API-Key': apiKey },
@@ -58,7 +53,20 @@ export default function SettingsView({
     } catch (err) {
       console.error('Failed to fetch monitoring schedule:', err);
     }
-  };
+  }, [apiKey]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const load = async () => {
+      if (isMounted) {
+        await fetchSchedule();
+      }
+    };
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchSchedule]);
 
   const handleUpdateSchedule = async (newFrequency: 'daily' | 'weekly' | 'off') => {
     if (!schedule) return;
