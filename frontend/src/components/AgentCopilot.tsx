@@ -149,6 +149,7 @@ export default function AgentCopilot({
 }: AgentCopilotProps) {
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [savingAllMsgId, setSavingAllMsgId] = useState<string | null>(null);
   const [messages, setMessages] = useState<AgentMessage[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -328,12 +329,17 @@ export default function AgentCopilot({
   // Save all proposals in a message batch
   const handleSaveAllProposals = async (msgId: string) => {
     const msg = messages.find((m) => m.id === msgId);
-    if (!msg || !msg.proposals) return;
+    if (!msg || !msg.proposals || savingAllMsgId) return;
 
-    for (const prop of msg.proposals) {
-      if (prop.status === 'pending') {
-        await handleSaveProposal(msgId, prop.id);
+    setSavingAllMsgId(msgId);
+    try {
+      for (const prop of msg.proposals) {
+        if (prop.status === 'pending') {
+          await handleSaveProposal(msgId, prop.id);
+        }
       }
+    } finally {
+      setSavingAllMsgId(null);
     }
   };
 
@@ -659,10 +665,20 @@ export default function AgentCopilot({
                         {msg.proposals.some((p) => p.status === 'pending') && msg.proposals.length > 1 && (
                           <button
                             onClick={() => handleSaveAllProposals(msg.id)}
-                            className="text-orange-700 hover:text-orange-800 font-semibold cursor-pointer flex items-center gap-1 text-xs"
+                            disabled={savingAllMsgId === msg.id}
+                            className="text-orange-700 hover:text-orange-800 font-semibold cursor-pointer flex items-center gap-1 text-xs disabled:opacity-50"
                           >
-                            <Plus className="h-3 w-3" />
-                            <span>Save All</span>
+                            {savingAllMsgId === msg.id ? (
+                              <>
+                                <Loader2 className="h-3 w-3 animate-spin text-orange-700" />
+                                <span>Saving All...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="h-3 w-3" />
+                                <span>Save All</span>
+                              </>
+                            )}
                           </button>
                         )}
                       </div>
@@ -828,8 +844,17 @@ export default function AgentCopilot({
               disabled={!input.trim() || isProcessing}
               className="h-8 px-4 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors disabled:opacity-30 cursor-pointer"
             >
-              <Send className="h-3.5 w-3.5" />
-              <span>Send</span>
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
+                  <span>Thinking...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Send</span>
+                </>
+              )}
             </button>
           </div>
         </div>

@@ -38,6 +38,9 @@ export default function SettingsView({
   // Schedule state
   const [schedule, setSchedule] = useState<MonitoringSchedule | null>(null);
   const [isSavingSchedule, setIsSavingSchedule] = useState(false);
+  const [updatingFreq, setUpdatingFreq] = useState<'daily' | 'weekly' | 'off' | null>(null);
+  const [isAddingComp, setIsAddingComp] = useState(false);
+  const [removingCompIndex, setRemovingCompIndex] = useState<number | null>(null);
   const [isTriggering, setIsTriggering] = useState(false);
   const [scheduleMsg, setScheduleMsg] = useState<string | null>(null);
 
@@ -69,8 +72,9 @@ export default function SettingsView({
   }, [fetchSchedule]);
 
   const handleUpdateSchedule = async (newFrequency: 'daily' | 'weekly' | 'off') => {
-    if (!schedule) return;
+    if (!schedule || updatingFreq) return;
     setIsSavingSchedule(true);
+    setUpdatingFreq(newFrequency);
     setScheduleMsg(null);
     try {
       const payload = {
@@ -98,6 +102,7 @@ export default function SettingsView({
       console.error('Failed to update schedule:', err);
     } finally {
       setIsSavingSchedule(false);
+      setUpdatingFreq(null);
     }
   };
 
@@ -151,24 +156,67 @@ export default function SettingsView({
     }
   };
 
-  const handleAddCompetitor = () => {
-    if (!newCompName.trim() || !newCompDomain.trim()) return;
-    setBrandProfile({
-      ...brandProfile,
-      competitors: [
-        ...brandProfile.competitors,
-        { name: newCompName.trim(), domain: newCompDomain.trim() },
-      ],
-    });
+  const handleAddCompetitor = async () => {
+    if (!newCompName.trim() || !newCompDomain.trim() || isAddingComp) return;
+    setIsAddingComp(true);
+    const cleanDomain = newCompDomain.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+    const newComp = { name: newCompName.trim(), domain: cleanDomain };
+    const updatedCompetitors = [...brandProfile.competitors, newComp];
+    const updatedProfile = { ...brandProfile, competitors: updatedCompetitors };
+
+    setBrandProfile(updatedProfile);
     setNewCompName('');
     setNewCompDomain('');
+
+    try {
+      const res = await fetch(apiUrl('/api/v1/profile'), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+        },
+        body: JSON.stringify(updatedProfile),
+      });
+      if (res.ok) {
+        setSuccessMsg(`Added competitor ${newComp.name}`);
+        onRefresh();
+        setTimeout(() => setSuccessMsg(null), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to save competitor:', err);
+    } finally {
+      setIsAddingComp(false);
+    }
   };
 
-  const handleRemoveCompetitor = (index: number) => {
-    setBrandProfile({
-      ...brandProfile,
-      competitors: brandProfile.competitors.filter((_, idx) => idx !== index),
-    });
+  const handleRemoveCompetitor = async (index: number) => {
+    if (removingCompIndex !== null) return;
+    setRemovingCompIndex(index);
+    const targetComp = brandProfile.competitors[index];
+    const updatedCompetitors = brandProfile.competitors.filter((_, idx) => idx !== index);
+    const updatedProfile = { ...brandProfile, competitors: updatedCompetitors };
+
+    setBrandProfile(updatedProfile);
+
+    try {
+      const res = await fetch(apiUrl('/api/v1/profile'), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+        },
+        body: JSON.stringify(updatedProfile),
+      });
+      if (res.ok) {
+        setSuccessMsg(`Removed competitor ${targetComp?.name || ''}`);
+        onRefresh();
+        setTimeout(() => setSuccessMsg(null), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to remove competitor:', err);
+    } finally {
+      setRemovingCompIndex(null);
+    }
   };
 
   return (
@@ -295,7 +343,12 @@ export default function SettingsView({
                     : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
-                <div className="text-xs font-bold text-slate-900">Weekly</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">Weekly</span>
+                  {updatingFreq === 'weekly' && (
+                    <Loader2 className="h-3 w-3 animate-spin text-emerald-600" />
+                  )}
+                </div>
                 <div className="text-[10px] text-slate-500 font-medium mt-0.5">Mon @ 9 AM UTC</div>
               </button>
 
@@ -310,7 +363,12 @@ export default function SettingsView({
                     : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
-                <div className="text-xs font-bold text-slate-900">Daily</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">Daily</span>
+                  {updatingFreq === 'daily' && (
+                    <Loader2 className="h-3 w-3 animate-spin text-emerald-600" />
+                  )}
+                </div>
                 <div className="text-[10px] text-slate-500 font-medium mt-0.5">Daily @ 9 AM UTC</div>
               </button>
 
@@ -325,7 +383,12 @@ export default function SettingsView({
                     : 'border-slate-200 bg-white hover:border-slate-300'
                 }`}
               >
-                <div className="text-xs font-bold text-slate-900">Manual</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">Manual</span>
+                  {updatingFreq === 'off' && (
+                    <Loader2 className="h-3 w-3 animate-spin text-slate-600" />
+                  )}
+                </div>
                 <div className="text-[10px] text-slate-500 font-medium mt-0.5">On-demand</div>
               </button>
             </div>
@@ -424,10 +487,20 @@ export default function SettingsView({
               <button
                 type="button"
                 onClick={handleAddCompetitor}
-                className="flex items-center justify-center gap-1 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold cursor-pointer shrink-0"
+                disabled={isAddingComp || !newCompName.trim() || !newCompDomain.trim()}
+                className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold cursor-pointer shrink-0 disabled:opacity-50"
               >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Add</span>
+                {isAddingComp ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Adding...</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Add</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -452,10 +525,15 @@ export default function SettingsView({
                     <button
                       type="button"
                       onClick={() => handleRemoveCompetitor(idx)}
-                      className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0"
+                      disabled={removingCompIndex === idx}
+                      className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                       title="Remove competitor"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      {removingCompIndex === idx ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" />
+                      )}
                     </button>
                   </div>
                 ))
