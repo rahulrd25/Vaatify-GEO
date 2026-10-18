@@ -10,7 +10,9 @@ _ENGINES = {}
 _SESSION_FACTORIES = {}
 
 def get_db_engine(database_url: str | None = None):
-    url = database_url or os.getenv("DATABASE_URL") or "sqlite:///geo_tracker_demo.db"
+    url = database_url or os.getenv("DATABASE_URL")
+    if not url:
+        raise ValueError("CRITICAL: DATABASE_URL is not configured in environment.")
     
     # Normalize postgresql:// to postgresql+psycopg2:// for standard compatibility
     if url.startswith("postgresql://"):
@@ -39,13 +41,6 @@ def get_db_engine(database_url: str | None = None):
         **engine_kwargs
     )
     
-    # Ensure all tables exist on startup
-    from src.geo_tracker.storage.models import Base
-    try:
-        Base.metadata.create_all(engine)
-    except Exception:
-        pass  # If tables already exist or under high concurrency
-
     _ENGINES[url] = engine
     return engine
 
@@ -61,33 +56,22 @@ def check_db_health(engine) -> bool:
         return False
 
 def create_session_factory(database_url: str | None = None) -> sessionmaker:
-    url = database_url or os.getenv("DATABASE_URL") or "sqlite:///geo_tracker_demo.db"
+    url = database_url or os.getenv("DATABASE_URL")
+    if not url:
+        raise ValueError("CRITICAL: DATABASE_URL is not configured in environment.")
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
 
     if url in _SESSION_FACTORIES:
         return _SESSION_FACTORIES[url]
 
-    try:
-        engine = get_db_engine(url)
-        # Verify connection for remote databases to prevent runtime query crashes
-        if not url.startswith("sqlite") and not check_db_health(engine):
-            raise ConnectionError(f"Database at {url} failed health check.")
-        factory = sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)
-        _SESSION_FACTORIES[url] = factory
-        return factory
-    except Exception as e:
-        is_prod = os.getenv("ENV", "development").lower() == "production"
-        if is_prod:
-            # In production, never silently mask a database outage with an ephemeral SQLite database
-            raise ConnectionError(f"Production database connection failed: {e}") from e
+    engine = get_db_engine(url)
+    if not url.startswith("sqlite") and not check_db_health(engine):
+        raise ConnectionError(f"Database connection failed health check for {url}.")
 
-        # In development: resilient fallback if remote postgres is temporarily unreachable
-        fallback_url = "sqlite:///geo_tracker_demo.db"
-        engine = get_db_engine(fallback_url)
-        factory = sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)
-        _SESSION_FACTORIES[fallback_url] = factory
-        return factory
+    factory = sessionmaker(autocommit=False, autoflush=False, expire_on_commit=False, bind=engine)
+    _SESSION_FACTORIES[url] = factory
+    return factory
 
 def get_db_session(database_url: str | None = None) -> Generator[Session, None, None]:
     """
@@ -105,4 +89,30 @@ def get_db_session(database_url: str | None = None) -> Generator[Session, None, 
         raise
     finally:
         session.close()
+
+def run_alembic_migrations(config_file: str = "alembic.ini") -> None:
+    """Executes all pending Alembic migrations up to head."""
+    import logging
+    from pathlib import Path
+    from alembic.config import Config
+    from alembic import command
+
+    # Silence noisy internal Alembic plugin registry and dialect inspection logs
+    logging.getLogger("alembic.runtime.plugins").setLevel(logging.WARNING)
+    logging.getLogger("alembic.runtime.migration").setLevel(logging.WARNING)
+    logging.getLogger("alembic").setLevel(logging.WARNING)
+
+    logger = logging.getLogger("geo_tracker.storage")
+
+    ini_path = Path(config_file)
+    if not ini_path.is_absolute():
+        project_root = Path(__file__).resolve().parent.parent.parent.parent
+        possible_path = project_root / config_file
+        if possible_path.exists():
+            ini_path = possible_path
+
+    logger.info("⚡ [Startup] Checking database schema with Alembic...")
+    alembic_cfg = Config(str(ini_path))
+    command.upgrade(alembic_cfg, "head")
+    logger.info("✓ [Startup] Database schema verified up-to-date (head).")
 

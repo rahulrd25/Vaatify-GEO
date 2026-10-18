@@ -4,14 +4,25 @@ from fastapi.openapi.utils import get_openapi
 from src.geo_tracker.api.middleware.cors import setup_cors
 from src.geo_tracker.api.routes import router
 from src.geo_tracker.api.security.api_key import security_settings
-from src.geo_tracker.storage.migrations import run_startup_checks_and_migrations
+from src.geo_tracker.storage.session import get_db_engine, check_db_health, run_alembic_migrations
 from src.geo_tracker.scheduler import global_scheduler
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Execute database connectivity checks and idempotent migrations on server boot
-    run_startup_checks_and_migrations()
-    # Start automated background monitoring scheduler
+    import logging
+    logger = logging.getLogger("geo_tracker.startup")
+
+    # 1. Database Connectivity Check
+    logger.info("⚡ [Startup] Checking database connectivity...")
+    engine = get_db_engine()
+    if not check_db_health(engine):
+        raise ConnectionError("Failed database connectivity check on startup.")
+    logger.info("✓ [Startup] Database connection verified.")
+
+    # 2. Run Alembic migrations to head on every startup
+    run_alembic_migrations()
+
+    # 3. Start automated background monitoring scheduler
     await global_scheduler.start()
     yield
     # Gracefully shut down background scheduler

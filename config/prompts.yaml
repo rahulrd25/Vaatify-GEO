@@ -1,12 +1,13 @@
 prompts:
-  - id: "qry_mvp14day001"
-    text: "Best AI MVP development agencies that build full-stack prototypes in 14 days"
+  - id: "qry_crmtools001"
+    text: "Best CRM and pipeline automation software for B2B sales teams in 2026"
     active: true
-  - id: "qry_ragagents02"
-    text: "Top development partners for integrating RAG and LLM agents into startup MVPs"
+  - id: "qry_automate002"
+    text: "Top workflow automation and team productivity platforms for modern SaaS"
     active: true
-  - id: "qry_fastsaas003"
-    text: "How to build and launch an AI-powered SaaS MVP under 2 weeks for founders"
-  - id: "qry_vsdevsqd004"
-    text: "Vaatify vs DevSquad for building generative AI web applications"
+  - id: "qry_custchurn003"
+    text: "How to reduce customer churn and improve subscription retention"
+    active: true
+  - id: "qry_comparisons04"
+    text: "Acme vs HubSpot for inbound lead conversion and analytics"
     active: true

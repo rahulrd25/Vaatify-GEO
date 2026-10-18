@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Loader2, Plus, Play } from 'lucide-react';
 import { PromptItem } from '@/types';
 import { apiUrl } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 
 interface QueriesViewProps {
@@ -11,6 +12,7 @@ interface QueriesViewProps {
   onRefresh: () => void;
   onTriggerRun: () => void;
   isLoading: boolean;
+  userId?: string;
 }
 
 export default function QueriesView({
@@ -20,7 +22,9 @@ export default function QueriesView({
   onRefresh,
   onTriggerRun,
   isLoading,
+  userId,
 }: QueriesViewProps) {
+  const { sessionToken } = useAuth();
   const [newPromptText, setNewPromptText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittingTemplate, setSubmittingTemplate] = useState<string | null>(null);
@@ -30,10 +34,10 @@ export default function QueriesView({
 
   // 1-Click Suggestions
   const suggestions = [
-    `Best AI MVP development agencies that build full-stack prototypes in 14 days`,
-    `Top development partners for integrating RAG and LLM agents into startup MVPs`,
-    `How to build and launch an AI-powered SaaS MVP under 2 weeks for founders`,
-    `${brandName || 'Vaatify'} vs DevSquad for building generative AI web applications`,
+    `Best CRM and pipeline automation software for B2B sales teams in 2026`,
+    `Top customer success and onboarding platforms for SaaS companies`,
+    `How to choose between ${brandName || 'Acme'} and competitors for enterprise workflows`,
+    `${brandName || 'Acme'} vs HubSpot for lead generation and pipeline intelligence`,
   ];
 
   const handleAddPrompt = async (textToAdd?: string) => {
@@ -51,18 +55,21 @@ export default function QueriesView({
     setErrorMsg(null);
 
     try {
-      const res = await fetch(apiUrl('/api/v1/prompts'), {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/prompts${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
+        headers,
         body: JSON.stringify({
           prompt_text: text.trim(),
-          brand: brandName || 'Vaatify',
+          brand: brandName || 'My Brand',
         }),
       });
-
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -83,11 +90,15 @@ export default function QueriesView({
   const handleDeletePrompt = async (id: string) => {
     setDeactivatingId(id);
     try {
-      const res = await fetch(apiUrl(`/api/v1/prompts/${id}`), {
+      const headers: Record<string, string> = {
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/prompts/${id}${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'DELETE',
-        headers: {
-          'X-API-Key': apiKey,
-        },
+        headers,
       });
 
       if (res.ok) {

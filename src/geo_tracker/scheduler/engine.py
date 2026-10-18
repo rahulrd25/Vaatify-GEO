@@ -9,7 +9,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Optional, Dict, Any
 from sqlalchemy import select
 from src.geo_tracker.storage.session import create_session_factory
-from src.geo_tracker.storage.models import MonitoringScheduleModel, BrandProfileModel
+from src.geo_tracker.storage.models import MonitoringScheduleModel
 from src.geo_tracker.runner import run_pipeline
 
 logger = logging.getLogger("geo_tracker.scheduler")

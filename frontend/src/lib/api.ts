@@ -27,3 +27,39 @@ export function apiUrl(path: string): string {
   const base = getApiBaseUrl();
   return base ? `${base}${cleanPath}` : cleanPath;
 }
+
+export interface AuthHeadersOptions {
+  apiKey?: string;
+  sessionToken?: string | null;
+  userId?: string | null;
+  contentType?: string;
+}
+
+/**
+ * Standardized Authorization & Tenant Header Factory.
+ * Prioritizes cryptographic Bearer JWT authentication for Supabase user sessions.
+ */
+export function getAuthHeaders(options?: AuthHeadersOptions): Record<string, string> {
+  const headers: Record<string, string> = {};
+
+  if (options?.contentType) {
+    headers['Content-Type'] = options.contentType;
+  }
+
+  // API Key header for service authentication
+  if (options?.apiKey) {
+    headers['X-API-Key'] = options.apiKey;
+  }
+
+  // Cryptographic Bearer JWT Token
+  if (options?.sessionToken) {
+    headers['Authorization'] = `Bearer ${options.sessionToken}`;
+  }
+
+  // Optional tenant identity hints for dev/compatibility
+  if (options?.userId) {
+    headers['X-User-Id'] = options.userId;
+  }
+
+  return headers;
+}

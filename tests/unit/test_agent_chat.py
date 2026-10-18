@@ -52,10 +52,10 @@ def setup_db_and_env(monkeypatch):
 
 def test_copilot_service_heuristic_suggestions():
     service = CopilotAgentService()
-    req = AgentChatRequest(message="Suggest 3 buyer intent queries for Vaatify")
+    req = AgentChatRequest(message="Suggest 3 buyer intent queries for Acme")
     brand_profile = {
-        "brand": {"name": "Vaatify", "domain": "vaatify.com"},
-        "competitors": [{"name": "DevSquad", "domain": "devsquad.com"}]
+        "brand": {"name": "Acme", "domain": "acme.com"},
+        "competitors": [{"name": "HubSpot", "domain": "hubspot.com"}]
     }
     prompts = [{"prompt_text": "Sample Query"}]
     metrics = {"overall_share_of_voice": 66.7, "total_evaluations": 10, "flips_count": 1}
@@ -70,7 +70,7 @@ def test_agent_chat_api_endpoint():
     response = client.post(
         "/api/v1/agent/chat",
         headers=AUTH_HEADERS,
-        json={"message": "Suggest 3 buyer queries for Vaatify"}
+        json={"message": "Suggest 3 buyer queries for Acme"}
     )
     assert response.status_code == 200
     data = response.json()

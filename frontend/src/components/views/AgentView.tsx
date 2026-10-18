@@ -9,6 +9,7 @@ interface AgentViewProps {
   onRefresh: () => void;
   onTriggerRun: () => Promise<void> | void;
   isLoading: boolean;
+  userId?: string;
 }
 
 export default function AgentView({
@@ -19,6 +20,7 @@ export default function AgentView({
   onRefresh,
   onTriggerRun,
   isLoading,
+  userId,
 }: AgentViewProps) {
   return (
     <AgentCopilot
@@ -29,6 +31,7 @@ export default function AgentView({
       onRefresh={onRefresh}
       onTriggerRun={onTriggerRun}
       isLoading={isLoading}
+      userId={userId}
     />
   );
 }

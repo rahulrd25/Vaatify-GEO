@@ -11,12 +11,13 @@ interface KpiOverviewProps {
 }
 
 export default function KpiOverview({
-  brandName = 'Vaatify',
+  brandName = 'Brand',
   overallSoV,
   totalEvaluations,
   activePrompts,
   flipsCount,
 }: KpiOverviewProps) {
+  const displayName = brandName && brandName.toLowerCase() !== 'vaatify' ? brandName : 'Brand';
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -27,7 +28,7 @@ export default function KpiOverview({
           <TrendingUp className="h-4 w-4 text-orange-600" />
         </div>
         <div className="text-2xl font-bold text-slate-900 tracking-tight">{overallSoV}%</div>
-        <p className="text-[11px] text-slate-500 mt-1">{brandName} citation rate</p>
+        <p className="text-[11px] text-slate-500 mt-1">{displayName} citation rate</p>
       </div>
 
       {/* 2. Total Evaluations */}

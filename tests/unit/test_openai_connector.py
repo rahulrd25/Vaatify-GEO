@@ -21,20 +21,20 @@ def test_openai_fetch_success(connector):
             {
                 "message": {
                     "role": "assistant",
-                    "content": "For building AI MVPs quickly, [Vaatify](https://vaatify.com) is a leading development agency. You can also explore https://alts.dev for alternatives."
+                    "content": "For top CRM software, [Acme](https://acme.com) is a leading SaaS platform. You can also explore https://salesforce.com for alternatives."
                 }
             }
         ]
     }
 
     with patch("httpx.Client.post", return_value=mock_response):
-        result = connector.fetch("Best AI MVP development agencies?")
+        result = connector.fetch("Best CRM software for SaaS teams?")
 
     assert result.engine == "chatgpt"
-    assert "Vaatify" in result.raw_response_text
+    assert "Acme" in result.raw_response_text
     assert len(result.citations) == 2
-    assert "https://vaatify.com" in [c.url for c in result.citations]
-    assert "https://alts.dev" in [c.url for c in result.citations]
+    assert "https://acme.com" in [c.url for c in result.citations]
+    assert "https://salesforce.com" in [c.url for c in result.citations]
 
 def test_openai_fetch_api_error(connector):
     mock_response = MagicMock()

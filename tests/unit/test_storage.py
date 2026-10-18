@@ -69,55 +69,32 @@ def test_save_and_get_runs_roundtrip(db_session):
     assert run.competitors_mentioned == ["Proseo", "Peec"]
     assert run.competitors_cited == [{"name": "Peec", "url": "https://peec.ai/pricing"}]
 
-def test_startup_migration_legacy_remapping(tmp_path):
-    from src.geo_tracker.storage.migrations import run_startup_checks_and_migrations
-    from src.geo_tracker.storage.models import PromptModel, RunModel
+def test_alembic_migrations_schema_integrity(tmp_path, monkeypatch):
+    from alembic.config import Config
+    from alembic import command
+    from src.geo_tracker.storage.models import PromptModel
 
-    db_path = f"sqlite:///{tmp_path}/test_migration.db"
-    
-    # 1. Run initial migrations to set up schema
-    run_startup_checks_and_migrations(db_path)
+    db_path = f"sqlite:///{tmp_path}/test_alembic.db"
+    monkeypatch.setenv("DATABASE_URL", db_path)
 
-    # 2. Insert a legacy p- prompt and child run
+    alembic_cfg = Config("alembic.ini")
+    command.upgrade(alembic_cfg, "head")
+
     engine = create_engine(db_path)
     TestingSession = sessionmaker(bind=engine)
     session = TestingSession()
 
-    legacy_prompt = PromptModel(
-        id="p-103",
-        brand="Vaatify",
-        prompt_text="Custom unique legacy query test",
+    prompt = PromptModel(
+        id="qry_test001",
+        brand="Acme",
+        prompt_text="Alembic schema test prompt",
         active=True
     )
-    session.add(legacy_prompt)
-    session.flush()
-
-    legacy_run = RunModel(
-        id="run_legacy_1",
-        prompt_id="p-103",
-        engine="perplexity",
-        raw_response_text="Legacy test response",
-        brand_mentioned=True,
-        brand_cited=False
-    )
-    session.add(legacy_run)
+    session.add(prompt)
     session.commit()
-    session.close()
 
-    # 3. Run startup migration again
-    run_startup_checks_and_migrations(db_path)
-
-    # 4. Verify p-103 was migrated to qry_ format and child run updated
-    session = TestingSession()
-    old_p = session.query(PromptModel).filter(PromptModel.id == "p-103").first()
-    assert old_p is None
-
-    migrated_p = session.query(PromptModel).filter(PromptModel.prompt_text == "Custom unique legacy query test").first()
-    assert migrated_p is not None
-    assert migrated_p.id.startswith("qry_")
-
-    updated_run = session.query(RunModel).filter(RunModel.id == "run_legacy_1").first()
-    assert updated_run is not None
-    assert updated_run.prompt_id == migrated_p.id
+    saved = session.query(PromptModel).filter(PromptModel.id == "qry_test001").first()
+    assert saved is not None
+    assert saved.prompt_text == "Alembic schema test prompt"
     session.close()
 

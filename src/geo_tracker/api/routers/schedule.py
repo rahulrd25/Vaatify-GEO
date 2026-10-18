@@ -13,8 +13,9 @@ from sqlalchemy import select
 from src.geo_tracker.api.security.api_key import verify_api_key
 from src.geo_tracker.api.security.rate_limiter import rate_limiter
 from src.geo_tracker.storage.session import get_db_session
-from src.geo_tracker.storage.models import MonitoringScheduleModel, BrandProfileModel
+from src.geo_tracker.storage.models import MonitoringScheduleModel
 from src.geo_tracker.scheduler.engine import compute_next_run
+from src.geo_tracker.api.utils.tenant import get_current_user_id, get_user_brand
 
 router = APIRouter(prefix="/api/v1/schedule", tags=["Automated Monitoring"])
 
@@ -43,18 +44,30 @@ class ScheduleResponse(BaseModel):
     summary="Get Active Monitoring Schedule",
     dependencies=[Depends(verify_api_key)]
 )
-def get_monitoring_schedule(session: Session = Depends(get_db_session)):
+def get_monitoring_schedule(
+    user_id: Optional[str] = Depends(get_current_user_id),
+    session: Session = Depends(get_db_session)
+):
     """Fetches the active background audit frequency, next scheduled run, and previous status."""
-    brand_profile = session.scalar(select(BrandProfileModel))
-    brand_name = brand_profile.name if brand_profile else "Vaatify"
+    brand_profile = get_user_brand(session, user_id)
+    brand_name = brand_profile.name if brand_profile else "My Brand"
+    brand_id = brand_profile.id if brand_profile else None
 
-    schedule = session.scalar(
-        select(MonitoringScheduleModel).where(MonitoringScheduleModel.brand == brand_name)
-    )
+    query = select(MonitoringScheduleModel)
+    if user_id and brand_id:
+        query = query.where((MonitoringScheduleModel.user_id == user_id) | (MonitoringScheduleModel.brand_id == brand_id))
+    elif user_id:
+        query = query.where(MonitoringScheduleModel.user_id == user_id)
+    elif brand_profile:
+        query = query.where(MonitoringScheduleModel.brand == brand_name)
+
+    schedule = session.scalar(query)
 
     if not schedule:
         schedule = MonitoringScheduleModel(
             id=f"sch_{uuid.uuid4().hex[:12]}",
+            user_id=user_id,
+            brand_id=brand_id,
             brand=brand_name,
             frequency="weekly",
             day_of_week=0,
@@ -88,15 +101,23 @@ def get_monitoring_schedule(session: Session = Depends(get_db_session)):
 )
 def update_monitoring_schedule(
     request: ScheduleUpdateRequest,
+    user_id: Optional[str] = Depends(get_current_user_id),
     session: Session = Depends(get_db_session)
 ):
     """Updates background audit cadence (Weekly / Daily / Off) and recomputes the next UTC runtime."""
-    brand_profile = session.scalar(select(BrandProfileModel))
-    brand_name = brand_profile.name if brand_profile else "Vaatify"
+    brand_profile = get_user_brand(session, user_id)
+    brand_name = brand_profile.name if brand_profile else "My Brand"
+    brand_id = brand_profile.id if brand_profile else None
 
-    schedule = session.scalar(
-        select(MonitoringScheduleModel).where(MonitoringScheduleModel.brand == brand_name)
-    )
+    query = select(MonitoringScheduleModel)
+    if user_id and brand_id:
+        query = query.where((MonitoringScheduleModel.user_id == user_id) | (MonitoringScheduleModel.brand_id == brand_id))
+    elif user_id:
+        query = query.where(MonitoringScheduleModel.user_id == user_id)
+    elif brand_profile:
+        query = query.where(MonitoringScheduleModel.brand == brand_name)
+
+    schedule = session.scalar(query)
 
     now = datetime.now(timezone.utc)
     next_run = compute_next_run(
@@ -110,6 +131,8 @@ def update_monitoring_schedule(
     if not schedule:
         schedule = MonitoringScheduleModel(
             id=f"sch_{uuid.uuid4().hex[:12]}",
+            user_id=user_id,
+            brand_id=brand_id,
             brand=brand_name,
             frequency=request.frequency,
             day_of_week=request.day_of_week,
@@ -120,6 +143,9 @@ def update_monitoring_schedule(
         )
         session.add(schedule)
     else:
+        schedule.user_id = user_id or schedule.user_id
+        schedule.brand_id = brand_id or schedule.brand_id
+        schedule.brand = brand_name
         schedule.frequency = request.frequency
         schedule.day_of_week = request.day_of_week
         schedule.hour_utc = request.hour_utc
@@ -148,7 +174,10 @@ def update_monitoring_schedule(
     summary="Manually Trigger Scheduled Evaluation Immediately",
     dependencies=[Depends(verify_api_key)]
 )
-async def trigger_schedule_evaluation(api_key: str = Depends(verify_api_key)):
+async def trigger_schedule_evaluation(
+    user_id: Optional[str] = Depends(get_current_user_id),
+    api_key: str = Depends(verify_api_key)
+):
     """Triggers an immediate background evaluation run via the scheduler queue with rate limiting."""
     rate_limiter.check_rate_limit(client_id=api_key, action="schedule_trigger", max_requests=5, window_seconds=900)
 
@@ -157,16 +186,26 @@ async def trigger_schedule_evaluation(api_key: str = Depends(verify_api_key)):
 
     session_factory = create_session_factory()
     with session_factory() as session:
-        brand_profile = session.scalar(select(BrandProfileModel))
-        brand_name = brand_profile.name if brand_profile else "Vaatify"
-        schedule = session.scalar(
-            select(MonitoringScheduleModel).where(MonitoringScheduleModel.brand == brand_name)
-        )
+        brand_profile = get_user_brand(session, user_id)
+        brand_name = brand_profile.name if brand_profile else "My Brand"
+        brand_id = brand_profile.id if brand_profile else None
+
+        query = select(MonitoringScheduleModel)
+        if user_id and brand_id:
+            query = query.where((MonitoringScheduleModel.user_id == user_id) | (MonitoringScheduleModel.brand_id == brand_id))
+        elif user_id:
+            query = query.where(MonitoringScheduleModel.user_id == user_id)
+        elif brand_profile:
+            query = query.where(MonitoringScheduleModel.brand == brand_name)
+
+        schedule = session.scalar(query)
         if not schedule:
             raise HTTPException(status_code=404, detail="Schedule not configured for brand.")
 
         sch_info = {
             "id": schedule.id,
+            "user_id": user_id,
+            "brand_id": brand_id,
             "brand": schedule.brand,
             "frequency": schedule.frequency,
             "day_of_week": schedule.day_of_week,

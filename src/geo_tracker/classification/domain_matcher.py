@@ -1,5 +1,5 @@
 from urllib.parse import urlparse
-from typing import List, Dict, Any
+from typing import List
 from src.geo_tracker.config import CompetitorsFileConfig
 from src.geo_tracker.classification.base import CitationMatch
 

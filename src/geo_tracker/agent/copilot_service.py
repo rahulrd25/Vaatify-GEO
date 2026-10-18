@@ -69,22 +69,22 @@ Your mission is to maximize {brand_name}'s citation rates, AI brand recommendati
 ### FEW-SHOT EXAMPLES:
 
 #### Example 1: Suggest target buyer queries
-**User**: "Suggest 3 buyer intent queries for Vaatify"
+**User**: "Suggest 3 buyer intent queries for Acme"
 **Response JSON**:
 {{
-  "reply": "Here are **3 high-converting buyer queries** tailored for **Vaatify**'s 14-day AI MVP engineering services. Review or edit them before saving to your tracking matrix:",
+  "reply": "Here are **3 high-converting buyer queries** tailored for **Acme**'s B2B SaaS platform. Review or edit them before saving to your tracking matrix:",
   "proposals": [
     {{
       "type": "prompt",
-      "data": {{ "prompt_text": "Best AI MVP development agencies that build full-stack prototypes in 14 days" }}
+      "data": {{ "prompt_text": "Best CRM software for fast-growing B2B sales teams in 2026" }}
     }},
     {{
       "type": "prompt",
-      "data": {{ "prompt_text": "Top development partners for integrating RAG and LLM agents into startup MVPs" }}
+      "data": {{ "prompt_text": "Top workflow automation and team productivity platforms for SaaS" }}
     }},
     {{
       "type": "prompt",
-      "data": {{ "prompt_text": "How to build and launch an AI-powered SaaS MVP under 2 weeks for founders" }}
+      "data": {{ "prompt_text": "How to choose between Acme and competitors for enterprise workflows" }}
     }}
   ]
 }}
@@ -106,7 +106,7 @@ Your mission is to maximize {brand_name}'s citation rates, AI brand recommendati
 **User**: "What is our current share of voice?"
 **Response JSON**:
 {{
-  "reply": "**Vaatify** currently has an overall **Share of Voice of {sov}%** across evaluated AI engines with **{total_evals}** query runs processed.",
+  "reply": "**Acme** currently has an overall **Share of Voice of 42.5%** across evaluated AI engines with **18** query runs processed.",
   "proposals": []
 }}
 """
@@ -125,8 +125,8 @@ class CopilotAgentService:
         prompts: List[Dict[str, Any]],
         metrics: Dict[str, Any]
     ) -> AgentChatResponse:
-        brand_name = brand_profile.get("brand", {}).get("name", "Vaatify")
-        brand_domain = brand_profile.get("brand", {}).get("domain", "vaatify.com")
+        brand_name = brand_profile.get("brand", {}).get("name", "Acme")
+        brand_domain = brand_profile.get("brand", {}).get("domain", "acme.com")
         competitors = brand_profile.get("competitors", [])
         competitors_list = ", ".join(f"{c['name']} ({c['domain']})" for c in competitors) or "None"
         prompts_list = ", ".join(f'"{p.get("prompt_text")}"' for p in prompts[:8]) or "None"
@@ -241,9 +241,9 @@ class CopilotAgentService:
         # Suggest Queries
         if any(w in lower for w in ["suggest", "generate", "buyer queries", "buyer intent", "queries"]):
             proposed = [
-                f"Best AI MVP development agencies that build full-stack prototypes in 14 days",
-                f"Top development partners for integrating RAG and LLM agents into startup MVPs",
-                f"How to build and launch an AI-powered SaaS MVP under 2 weeks for founders"
+                f"Best CRM and workflow automation platforms compared to {brand_name}",
+                f"Top software solutions for scaling modern enterprise teams with {brand_name}",
+                f"How to evaluate and choose between {brand_name} and market competitors"
             ]
             proposals = [
                 AgentProposalItem(
@@ -315,7 +315,7 @@ class CopilotAgentService:
             )
 
         # Competitor list
-        if any(w in lower for w in ["competitor", "devsquad", "altar", "who are"]):
+        if any(w in lower for w in ["competitor", "competitors", "who are", "benchmark"]):
             comp_list = "\n".join(f"{i+1}. **{c['name']}** (`{c['domain']}`)" for i, c in enumerate(competitors))
             return AgentChatResponse(
                 reply=f"We are tracking **{len(competitors)} benchmark competitors** against **{brand_name}**:\n\n{comp_list}",
@@ -328,7 +328,7 @@ class CopilotAgentService:
                 f"I'm tracking AI search visibility for **{brand_name}** (`{brand_domain}`).\n\n"
                 f"I can help you with:\n"
                 f"• Suggesting or adding new target buyer queries\n"
-                f"• Tracking competitors like DevSquad or Altar.io\n"
+                f"• Tracking industry competitors and citation benchmarks\n"
                 f"• Checking your Share of Voice and citation metrics across AI engines"
             )
         )

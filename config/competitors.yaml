@@ -1,13 +1,13 @@
 brand:
-  name: "Vaatify"
-  domain: "vaatify.com"
+  name: "Acme"
+  domain: "acme.com"
 
 competitors:
-  - name: "DevSquad"
-    domain: "devsquad.com"
-  - name: "Altar.io"
-    domain: "altar.io"
-  - name: "MVP.dev"
-    domain: "mvp.dev"
-  - name: "BuildWithTitan"
-    domain: "buildwithtitan.com"
+  - name: "HubSpot"
+    domain: "hubspot.com"
+  - name: "Salesforce"
+    domain: "salesforce.com"
+  - name: "Zendesk"
+    domain: "zendesk.com"
+  - name: "Intercom"
+    domain: "intercom.com"

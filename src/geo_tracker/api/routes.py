@@ -18,6 +18,7 @@ from src.geo_tracker.api.routers.pipeline import router as pipeline_router
 from src.geo_tracker.api.routers.metrics import router as metrics_router
 from src.geo_tracker.api.routers.copilot import router as copilot_router
 from src.geo_tracker.api.routers.schedule import router as schedule_router
+from src.geo_tracker.api.routers.onboarding import router as onboarding_router
 
 router = APIRouter()
 
@@ -42,6 +43,7 @@ def tracker_status():
     }
 
 # --- Include Domain Sub-Routers ---
+router.include_router(onboarding_router)
 router.include_router(profile_router)
 router.include_router(prompts_router)
 router.include_router(pipeline_router)

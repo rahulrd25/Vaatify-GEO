@@ -1,10 +1,9 @@
 import logging
 from typing import Dict, List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from src.geo_tracker.config import (
-    load_settings,
     load_competitors_config,
-    load_prompts_config,
     CompetitorsFileConfig
 )
 from src.geo_tracker.connectors.base import BaseConnector
@@ -17,7 +16,7 @@ from src.geo_tracker.classification.base import BaseClassifier
 from src.geo_tracker.classification.jev_classifier import JevClassifier
 from src.geo_tracker.storage.session import create_session_factory
 from src.geo_tracker.storage.repository import Repository
-from src.geo_tracker.storage.models import RunModel
+from src.geo_tracker.storage.models import RunModel, PromptModel
 
 logger = logging.getLogger("geo_tracker.runner")
 
@@ -26,11 +25,13 @@ def run_pipeline(
     classifier: Optional[BaseClassifier] = None,
     db_session: Optional[Session] = None,
     competitors_config: Optional[CompetitorsFileConfig] = None,
-    mode: str = "hybrid"
+    mode: str = "hybrid",
+    user_id: Optional[str] = None,
+    brand_id: Optional[str] = None,
 ) -> List[RunModel]:
     """
     Executes the end-to-end GEO Visibility Tracker pipeline:
-    1. Loads active prompts from DB (auto-seeds from config/prompts.yaml if empty).
+    1. Loads active prompts from DB scoped strictly to the specified tenant brand/user.
     2. Executes target connectors per prompt based on mode ('hybrid' | 'api' | 'browser').
     3. Runs Jev classifier per response.
     4. Saves run snapshots to database with loud error logging and fault tolerance.
@@ -48,24 +49,48 @@ def run_pipeline(
     try:
         repo = Repository(session)
         
-        # 1. Fetch or auto-seed active prompts
-        active_prompts = repo.get_active_prompts()
-        if not active_prompts:
-            logger.info("No active prompts found in database. Auto-seeding from config/prompts.yaml...")
-            prompts_cfg = load_prompts_config("config/prompts.yaml")
-            comp_cfg_seed = load_competitors_config("config/competitors.yaml")
-            for item in prompts_cfg.prompts:
-                if item.active:
-                    repo.add_prompt(
-                        prompt_id=item.id,
-                        brand=comp_cfg_seed.brand.name,
-                        prompt_text=item.text,
-                        active=True
-                    )
+        # 1. Fetch active prompts strictly for this tenant
+        if user_id or brand_id:
+            p_q = session.query(PromptModel).filter(PromptModel.active == True)
+            if user_id and brand_id:
+                p_q = p_q.filter((PromptModel.brand_id == brand_id) | (PromptModel.user_id == user_id))
+            elif user_id:
+                p_q = p_q.filter(PromptModel.user_id == user_id)
+            else:
+                p_q = p_q.filter(PromptModel.brand_id == brand_id)
+            active_prompts = p_q.all()
+        else:
             active_prompts = repo.get_active_prompts()
 
-        # 2. Load competitor configuration
-        comp_config = competitors_config or load_competitors_config("config/competitors.yaml")
+        if not active_prompts:
+            logger.info("No active prompts found for evaluation. Skipping pipeline run.")
+            return []
+
+        # 2. Load competitor configuration strictly for this brand
+        if competitors_config:
+            comp_config = competitors_config
+        elif user_id or brand_id:
+            from src.geo_tracker.storage.models import BrandProfileModel
+            from src.geo_tracker.config import BrandConfig, CompetitorConfig
+            brand_profile = None
+            if brand_id:
+                brand_profile = session.scalar(select(BrandProfileModel).where(BrandProfileModel.id == brand_id))
+            elif user_id:
+                brand_profile = session.scalar(select(BrandProfileModel).where(BrandProfileModel.user_id == user_id))
+
+            if brand_profile:
+                comp_config = CompetitorsFileConfig(
+                    brand=BrandConfig(name=brand_profile.name, domain=brand_profile.domain),
+                    competitors=[
+                        CompetitorConfig(name=c.name, domain=c.domain)
+                        for c in brand_profile.competitors
+                        if c.is_active
+                    ]
+                )
+            else:
+                comp_config = load_competitors_config("config/competitors.yaml")
+        else:
+            comp_config = load_competitors_config("config/competitors.yaml")
 
         # 3. Instantiate connectors based on collection mode
         if connectors:

@@ -5,7 +5,7 @@ citation carousel positions, and snippet context cards.
 """
 import logging
 import re
-from typing import List, Optional
+from typing import List
 from urllib.parse import quote_plus
 from src.geo_tracker.connectors.base import BaseConnector, NormalizedResponse, Citation
 

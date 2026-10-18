@@ -1,9 +1,8 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from typesafe_sdk import NoulAnswer
 from src.geo_tracker.config import CompetitorsFileConfig, BrandConfig, CompetitorConfig
 from src.geo_tracker.connectors.base import NormalizedResponse, Citation
-from src.geo_tracker.classification.jev_classifier import JevClassifier, JevClassifierError
+from src.geo_tracker.classification.jev_classifier import JevClassifier
 
 @pytest.fixture
 def classifier(monkeypatch):

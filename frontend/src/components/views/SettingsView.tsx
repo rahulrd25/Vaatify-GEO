@@ -16,12 +16,14 @@ import {
 } from 'lucide-react';
 import { BrandProfile, MonitoringSchedule } from '@/types';
 import { apiUrl } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface SettingsViewProps {
   apiKey: string;
   brandProfile: BrandProfile;
   setBrandProfile: (profile: BrandProfile) => void;
   onRefresh: () => void;
+  userId?: string;
 }
 
 export default function SettingsView({
@@ -29,7 +31,9 @@ export default function SettingsView({
   brandProfile,
   setBrandProfile,
   onRefresh,
+  userId,
 }: SettingsViewProps) {
+  const { sessionToken } = useAuth();
   const [newCompName, setNewCompName] = useState('');
   const [newCompDomain, setNewCompDomain] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -46,8 +50,11 @@ export default function SettingsView({
 
   const fetchSchedule = useCallback(async () => {
     try {
-      const res = await fetch(apiUrl('/api/v1/schedule'), {
-        headers: { 'X-API-Key': apiKey },
+      const headers: Record<string, string> = { 'X-API-Key': apiKey };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+      const res = await fetch(apiUrl(`/api/v1/schedule${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
+        headers,
       });
       if (res.ok) {
         const data = await res.json();
@@ -56,7 +63,7 @@ export default function SettingsView({
     } catch (err) {
       console.error('Failed to fetch monitoring schedule:', err);
     }
-  }, [apiKey]);
+  }, [apiKey, userId, sessionToken]);
 
   useEffect(() => {
     let isMounted = true;
@@ -84,12 +91,16 @@ export default function SettingsView({
         minute_utc: schedule.minute_utc,
         is_active: newFrequency !== 'off',
       };
-      const res = await fetch(apiUrl('/api/v1/schedule'), {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/schedule${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
+        headers,
         body: JSON.stringify(payload),
       });
       if (res.ok) {
@@ -110,9 +121,13 @@ export default function SettingsView({
     setIsTriggering(true);
     setScheduleMsg(null);
     try {
-      const res = await fetch(apiUrl('/api/v1/schedule/trigger'), {
+      const headers: Record<string, string> = { 'X-API-Key': apiKey };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/schedule/trigger${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'POST',
-        headers: { 'X-API-Key': apiKey },
+        headers,
       });
       if (res.ok) {
         setScheduleMsg('Audit dispatched in background worker.');
@@ -135,12 +150,16 @@ export default function SettingsView({
     setSuccessMsg(null);
 
     try {
-      const res = await fetch(apiUrl('/api/v1/profile'), {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/profile${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
+        headers,
         body: JSON.stringify(brandProfile),
       });
 
@@ -169,12 +188,16 @@ export default function SettingsView({
     setNewCompDomain('');
 
     try {
-      const res = await fetch(apiUrl('/api/v1/profile'), {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/profile${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
+        headers,
         body: JSON.stringify(updatedProfile),
       });
       if (res.ok) {
@@ -199,12 +222,16 @@ export default function SettingsView({
     setBrandProfile(updatedProfile);
 
     try {
-      const res = await fetch(apiUrl('/api/v1/profile'), {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/profile${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
+        headers,
         body: JSON.stringify(updatedProfile),
       });
       if (res.ok) {
@@ -285,7 +312,7 @@ export default function SettingsView({
                       brand: { ...brandProfile.brand, domain: e.target.value },
                     })
                   }
-                  placeholder="e.g. vaatify.com"
+                  placeholder="e.g. acme.com"
                   className="w-full px-2.5 py-1.5 rounded bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-orange-500 focus:bg-white font-mono"
                 />
               </div>

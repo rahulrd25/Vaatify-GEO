@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import MagicMock, patch
-import httpx
 from src.geo_tracker.connectors.claude_search import ClaudeSearchConnector, ClaudeAPIError
 
 @pytest.fixture

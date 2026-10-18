@@ -3,16 +3,17 @@ Pipeline Execution Router.
 Handles manual evaluation triggers, background pipeline execution, and progress status tracking.
 """
 import logging
+from typing import Optional
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from src.geo_tracker.api.security.api_key import verify_api_key
 from src.geo_tracker.api.security.rate_limiter import rate_limiter
-from src.geo_tracker.storage.session import get_db_session
+from src.geo_tracker.storage.session import get_db_session, create_session_factory
 from src.geo_tracker.runner import run_pipeline
 from src.geo_tracker.reporting.weekly_report import generate_weekly_report
-from src.geo_tracker.config import load_competitors_config
+from src.geo_tracker.api.utils.tenant import get_current_user_id, get_user_brand
 
 logger = logging.getLogger("geo_tracker.pipeline")
 router = APIRouter(prefix="/api/v1/pipeline", tags=["Pipeline Execution"])
@@ -25,19 +26,25 @@ pipeline_state = {
     "error": None
 }
 
-def run_pipeline_task(mode: str = "hybrid"):
+def run_pipeline_task(mode: str = "hybrid", user_id: Optional[str] = None):
     """Background task executing the evaluation runner across configured AI engines."""
     global pipeline_state
     pipeline_state["is_running"] = True
     pipeline_state["mode"] = mode
     pipeline_state["error"] = None
     try:
-        config = load_competitors_config()
-        brand_name = config.brand.name or "Vaatify"
-        runs = run_pipeline(mode=mode)
+        brand_name = "My Brand"
+        session_factory = create_session_factory()
+        with session_factory() as s:
+            brand_profile = get_user_brand(s, user_id)
+            if brand_profile:
+                brand_name = brand_profile.name
+
+        runs = run_pipeline(mode=mode, user_id=user_id)
         pipeline_state["last_runs_count"] = len(runs)
         pipeline_state["last_run_at"] = datetime.now(timezone.utc).isoformat()
-        generate_weekly_report(runs, output_file_path="weekly_report.md", brand_name=brand_name)
+        if runs:
+            generate_weekly_report(runs, output_file_path=f"weekly_report_{user_id or 'default'}.md", brand_name=brand_name)
     except Exception as e:
         pipeline_state["error"] = str(e)
         logger.error(f"Background pipeline run failed: {e}", exc_info=True)
@@ -61,13 +68,14 @@ def get_pipeline_status():
 def trigger_pipeline_run(
     background_tasks: BackgroundTasks,
     mode: str = "hybrid",
+    user_id: Optional[str] = Depends(get_current_user_id),
     api_key: str = Depends(verify_api_key),
     session: Session = Depends(get_db_session)
 ):
     """Triggers an evaluation pipeline in the background with sliding-window rate limiting."""
     rate_limiter.check_rate_limit(client_id=api_key, action="pipeline_run", max_requests=5, window_seconds=900)
 
-    background_tasks.add_task(run_pipeline_task, mode=mode)
+    background_tasks.add_task(run_pipeline_task, mode=mode, user_id=user_id)
     return {
         "status": "started",
         "mode": mode,

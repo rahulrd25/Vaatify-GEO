@@ -2,7 +2,7 @@
 Analytics, Share of Voice & Citation Metrics Router.
 Calculates real-time Share of Voice (SoV), engine performance, competitor benchmarks, and citation logs.
 """
-from typing import List, Optional
+from typing import Optional
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -11,7 +11,7 @@ from src.geo_tracker.api.security.api_key import verify_api_key
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.repository import Repository
 from src.geo_tracker.storage.models import BrandProfileModel, PromptModel, RunModel, DriftAlertModel
-from src.geo_tracker.config import load_competitors_config
+from src.geo_tracker.api.utils.tenant import get_current_user_id, get_user_brand
 from src.geo_tracker.aggregation.citation_metrics import (
     calculate_overall_citation_rate,
     calculate_citation_rate_per_engine,
@@ -27,29 +27,53 @@ router = APIRouter(prefix="/api/v1", tags=["Analytics & Metrics"])
     summary="Get Share of Voice & Citation Metrics",
     dependencies=[Depends(verify_api_key)]
 )
-def get_metrics_overview(session: Session = Depends(get_db_session)):
-    """Computes comprehensive GEO metrics including overall SoV, per-engine breakdown, and competitor rankings."""
-    try:
+def get_metrics_overview(
+    user_id: Optional[str] = Depends(get_current_user_id),
+    session: Session = Depends(get_db_session)
+):
+    """Computes comprehensive GEO metrics scoped strictly to the tenant brand account."""
+    if user_id:
+        brand_profile = get_user_brand(session, user_id)
+        if not brand_profile:
+            return {
+                "brand_name": "",
+                "overall_share_of_voice": 0.0,
+                "total_evaluations": 0,
+                "active_prompts_count": 0,
+                "flips_count": 0,
+                "per_engine_rates": [],
+                "per_prompt_rates": {},
+                "competitor_ranking": [],
+                "flips": []
+            }
+
+        active_prompts = session.query(PromptModel).filter(
+            PromptModel.active == True,
+            (PromptModel.brand_id == brand_profile.id) | (PromptModel.user_id == user_id)
+        ).all()
+        prompt_ids = [p.id for p in active_prompts]
+
+        if not prompt_ids:
+            return {
+                "brand_name": brand_profile.name,
+                "overall_share_of_voice": 0.0,
+                "total_evaluations": 0,
+                "active_prompts_count": 0,
+                "flips_count": 0,
+                "per_engine_rates": [],
+                "per_prompt_rates": {},
+                "competitor_ranking": [],
+                "flips": []
+            }
+
+        runs = session.query(RunModel).filter(RunModel.prompt_id.in_(prompt_ids)).all()
+        brand_name = brand_profile.name
+    else:
         repo = Repository(session)
         runs = repo.get_all_runs()
         active_prompts = repo.get_active_prompts()
         brand_profile = session.scalar(select(BrandProfileModel))
-        brand_name = brand_profile.name if brand_profile else "Vaatify"
-    except Exception:
-        # Fallback gracefully to SQLite demo database
-        try:
-            from src.geo_tracker.storage.session import create_session_factory
-            fallback_factory = create_session_factory("sqlite:///geo_tracker_demo.db")
-            with fallback_factory() as fallback_session:
-                fb_repo = Repository(fallback_session)
-                runs = fb_repo.get_all_runs()
-                active_prompts = fb_repo.get_active_prompts()
-                fb_profile = fallback_session.scalar(select(BrandProfileModel))
-                brand_name = fb_profile.name if fb_profile else "Vaatify"
-        except Exception:
-            runs = []
-            active_prompts = []
-            brand_name = "Vaatify"
+        brand_name = brand_profile.name if brand_profile else "Acme"
 
     if not runs:
         return {
@@ -70,23 +94,15 @@ def get_metrics_overview(session: Session = Depends(get_db_session)):
     top_competitors = get_top_competitors_by_citation_frequency(runs)
     flips = detect_citation_flips(runs)
 
-    # per_engine already returns List[Dict[str, Any]] matching frontend EngineRateItem
-    engine_rates_formatted = per_engine
-
-    # top_competitors already returns List[Dict[str, Any]] with name, citation_count, citation_rate
-    competitors_formatted = top_competitors
-
-
-
     return {
         "brand_name": brand_name,
         "overall_share_of_voice": round(overall_sov, 2),
         "total_evaluations": len(runs),
         "active_prompts_count": len(active_prompts),
         "flips_count": len(flips),
-        "per_engine_rates": engine_rates_formatted,
+        "per_engine_rates": per_engine,
         "per_prompt_rates": per_prompt,
-        "competitor_ranking": competitors_formatted,
+        "competitor_ranking": top_competitors,
         "flips": flips
     }
 
@@ -99,10 +115,20 @@ def list_runs(
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
     engine: Optional[str] = None,
+    user_id: Optional[str] = Depends(get_current_user_id),
     session: Session = Depends(get_db_session)
 ):
-    """Returns granular individual citation evaluation logs across AI search engines."""
+    """Returns granular citation evaluation logs scoped to the tenant brand."""
     query = session.query(RunModel, PromptModel).join(PromptModel, RunModel.prompt_id == PromptModel.id)
+
+    if user_id:
+        brand_profile = get_user_brand(session, user_id)
+        if not brand_profile:
+            return []
+        query = query.filter(
+            (PromptModel.brand_id == brand_profile.id) | (PromptModel.user_id == user_id)
+        )
+
     if engine:
         query = query.filter(RunModel.engine == engine)
     query = query.order_by(RunModel.run_timestamp.desc()).offset(offset).limit(limit)
@@ -134,10 +160,19 @@ def list_runs(
 )
 def list_alerts(
     status_filter: Optional[str] = Query(None, alias="status"),
+    user_id: Optional[str] = Depends(get_current_user_id),
     session: Session = Depends(get_db_session)
 ):
-    """Retrieves all citation drift alerts (gained or lost citations against competitors)."""
+    """Retrieves citation drift alerts scoped to the tenant brand."""
     query = session.query(DriftAlertModel, PromptModel).join(PromptModel, DriftAlertModel.prompt_id == PromptModel.id)
+
+    if user_id:
+        brand_profile = get_user_brand(session, user_id)
+        if not brand_profile:
+            return []
+        query = query.filter(
+            (PromptModel.brand_id == brand_profile.id) | (PromptModel.user_id == user_id)
+        )
     if status_filter:
         query = query.filter(DriftAlertModel.status == status_filter)
     query = query.order_by(DriftAlertModel.triggered_at.desc())
