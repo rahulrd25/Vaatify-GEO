@@ -31,24 +31,18 @@ export default function Sidebar({
   return (
     <aside className="w-60 bg-white border-r border-slate-200 flex flex-col shrink-0 min-h-screen">
       {/* Brand & Workspace Header */}
-      <div className="p-4 border-b border-slate-200">
-        <div className="flex items-center gap-2.5">
-          <Image
-            src="/logo-icon.png"
-            alt="Vaatify GEO"
-            width={28}
-            height={28}
-            priority
-            className="h-7 w-7 object-contain shrink-0"
-          />
-          <div>
-            <div className="text-sm font-bold text-slate-900 tracking-tight leading-tight flex items-center gap-1">
-              <span>Vaatify</span>
-              <span className="text-[#FD5002] font-black">GEO</span>
-            </div>
-            <p className="text-[11px] text-slate-500 font-medium leading-tight">AI Search Visibility Platform</p>
-          </div>
-        </div>
+      <div className="px-4 py-3.5 border-b border-slate-200">
+        <Image
+          src="/logo.svg"
+          alt="Vaatify GEO"
+          width={136}
+          height={34}
+          priority
+          className="h-8 w-auto object-contain"
+        />
+        <p className="text-[11px] text-slate-500 font-medium leading-tight mt-1.5">
+          AI Search Visibility Platform
+        </p>
       </div>
 
 
