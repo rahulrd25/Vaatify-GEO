@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.models import Base, PromptModel
 
 def test_get_db_session_lifecycle():

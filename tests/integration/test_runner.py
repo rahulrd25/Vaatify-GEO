@@ -14,6 +14,8 @@ def db_session():
     Base.metadata.create_all(engine)
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = TestingSessionLocal()
+    session.add(PromptModel(id="qry_test_001", brand="Omnia", prompt_text="What are top GEO tools?", active=True))
+    session.commit()
     try:
         yield session
     finally:

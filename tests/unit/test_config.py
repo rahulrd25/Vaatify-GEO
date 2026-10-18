@@ -1,4 +1,3 @@
-import os
 import pytest
 from src.geo_tracker.config import (
     load_settings,

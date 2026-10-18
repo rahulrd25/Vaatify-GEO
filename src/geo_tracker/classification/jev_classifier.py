@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from typesafe_sdk import TypeSafeClient, Noul, TypeSafeError
+from typesafe_sdk import TypeSafeClient, Noul
 from src.geo_tracker.config import load_settings, CompetitorsFileConfig
 from src.geo_tracker.connectors.base import NormalizedResponse
 from src.geo_tracker.classification.base import BaseClassifier, ClassificationResult

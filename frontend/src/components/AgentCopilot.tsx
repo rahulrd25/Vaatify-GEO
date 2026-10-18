@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { PromptItem, BrandProfile, OverviewMetrics, RunItem } from '@/types';
 import { apiUrl } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface MetricChip {
   label: string;
@@ -50,6 +51,7 @@ interface AgentCopilotProps {
   onRefresh: () => void;
   onTriggerRun: () => Promise<void> | void;
   isLoading: boolean;
+  userId?: string;
 }
 
 function generateId(prefix: string): string {
@@ -146,7 +148,9 @@ export default function AgentCopilot({
   metrics,
   onRefresh,
   onTriggerRun,
+  userId,
 }: AgentCopilotProps) {
+  const { sessionToken } = useAuth();
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [savingAllMsgId, setSavingAllMsgId] = useState<string | null>(null);
@@ -195,13 +199,13 @@ export default function AgentCopilot({
     {
       icon: Search,
       title: 'Generate Target Queries',
-      desc: 'Suggest 3 high-converting 14-day MVP buyer queries to review and save',
-      prompt: 'Suggest 3 high-converting buyer intent queries for Vaatify',
+      desc: `Suggest 3 high-converting B2B SaaS buyer queries for ${brandProfile.brand.name || 'our brand'}`,
+      prompt: `Suggest 3 high-converting buyer intent queries for ${brandProfile.brand.name || 'our brand'}`,
     },
     {
       icon: Users,
       title: 'Competitor Benchmark',
-      desc: 'See how DevSquad and Altar.io perform against Vaatify',
+      desc: 'Compare our citation rates against key industry competitors',
       prompt: 'Who are our top tracked competitors and what are their citation rates?',
     },
     {
@@ -241,16 +245,20 @@ export default function AgentCopilot({
     );
 
     try {
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) headers['X-User-Id'] = userId;
+
       if (prop.type === 'prompt' && prop.data.prompt_text) {
-        const res = await fetch(apiUrl('/api/v1/prompts'), {
+        const res = await fetch(apiUrl(`/api/v1/prompts${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': apiKey,
-          },
+          headers,
           body: JSON.stringify({
             prompt_text: prop.data.prompt_text.trim(),
-            brand: brandProfile.brand.name || 'Vaatify',
+            brand: brandProfile.brand.name || 'My Brand',
           }),
         });
 
@@ -280,15 +288,12 @@ export default function AgentCopilot({
           { name: prop.data.name.trim(), domain: prop.data.domain.trim() }
         ];
 
-        const res = await fetch(apiUrl('/api/v1/profile'), {
+        const res = await fetch(apiUrl(`/api/v1/profile${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-API-Key': apiKey,
-          },
+          headers,
           body: JSON.stringify({
             brand: brandProfile.brand,
-            competitors: updatedComps,
+            competitors: updatedComps
           }),
         });
 
@@ -422,9 +427,13 @@ export default function AgentCopilot({
         let topCompetitorsList: [string, number][] = [];
 
         try {
+          const authHeaders: Record<string, string> = { 'X-API-Key': apiKey };
+          if (sessionToken) authHeaders['Authorization'] = `Bearer ${sessionToken}`;
+          if (userId) authHeaders['X-User-Id'] = userId;
+
           const [freshMetricsRes, freshRunsRes] = await Promise.all([
-            fetch(apiUrl('/api/v1/metrics/overview'), { headers: { 'X-API-Key': apiKey } }),
-            fetch(apiUrl('/api/v1/runs?limit=30'), { headers: { 'X-API-Key': apiKey } })
+            fetch(apiUrl(`/api/v1/metrics/overview${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), { headers: authHeaders }),
+            fetch(apiUrl(`/api/v1/runs?limit=30${userId ? `&user_id=${encodeURIComponent(userId)}` : ''}`), { headers: authHeaders })
           ]);
           if (freshMetricsRes.ok) {
             const mData = await freshMetricsRes.json();
@@ -521,12 +530,16 @@ export default function AgentCopilot({
         text: m.text,
       }));
 
-      const res = await fetch(apiUrl('/api/v1/agent/chat'), {
+      const chatHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+      if (sessionToken) chatHeaders['Authorization'] = `Bearer ${sessionToken}`;
+      if (userId) chatHeaders['X-User-Id'] = userId;
+
+      const res = await fetch(apiUrl(`/api/v1/agent/chat${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
+        headers: chatHeaders,
         body: JSON.stringify({
           message: query,
           history: historyPayload,

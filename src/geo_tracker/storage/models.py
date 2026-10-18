@@ -11,9 +11,11 @@ class BrandProfileModel(Base):
     __tablename__ = "brand_profiles"
 
     id: Mapped[str] = mapped_column(String(50), primary_key=True, default=lambda: f"brand_{uuid.uuid4().hex[:12]}")
-    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    user_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     domain: Mapped[str] = mapped_column(String(255), nullable=False)
     industry: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    onboarding_completed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
@@ -22,6 +24,9 @@ class BrandProfileModel(Base):
 
     competitors: Mapped[List["CompetitorModel"]] = relationship(
         "CompetitorModel", back_populates="brand_profile", cascade="all, delete-orphan"
+    )
+    prompts: Mapped[List["PromptModel"]] = relationship(
+        "PromptModel", back_populates="brand_profile", cascade="all, delete-orphan"
     )
 
 class CompetitorModel(Base):
@@ -44,6 +49,8 @@ class PromptModel(Base):
     __tablename__ = "prompts"
 
     id: Mapped[str] = mapped_column(String(50), primary_key=True, default=lambda: f"qry_{uuid.uuid4().hex[:12]}")
+    user_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
+    brand_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("brand_profiles.id", ondelete="CASCADE"), nullable=True, index=True)
     brand: Mapped[str] = mapped_column(String(100), nullable=False)
     prompt_text: Mapped[str] = mapped_column(Text, nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -53,6 +60,7 @@ class PromptModel(Base):
         nullable=False
     )
 
+    brand_profile: Mapped[Optional["BrandProfileModel"]] = relationship("BrandProfileModel", back_populates="prompts")
     runs: Mapped[List["RunModel"]] = relationship("RunModel", back_populates="prompt", cascade="all, delete-orphan")
     alerts: Mapped[List["DriftAlertModel"]] = relationship("DriftAlertModel", back_populates="prompt", cascade="all, delete-orphan")
     recommendations: Mapped[List["AgentRecommendationModel"]] = relationship("AgentRecommendationModel", back_populates="prompt", cascade="all, delete-orphan")
@@ -127,7 +135,9 @@ class MonitoringScheduleModel(Base):
     __tablename__ = "monitoring_schedules"
 
     id: Mapped[str] = mapped_column(String(50), primary_key=True, default=lambda: f"sch_{uuid.uuid4().hex[:12]}")
-    brand: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
+    user_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
+    brand_id: Mapped[Optional[str]] = mapped_column(String(50), ForeignKey("brand_profiles.id", ondelete="CASCADE"), nullable=True, index=True)
+    brand: Mapped[str] = mapped_column(String(100), nullable=False)
     frequency: Mapped[str] = mapped_column(String(20), default="weekly", nullable=False)  # "weekly", "daily", "off"
     day_of_week: Mapped[int] = mapped_column(default=0, nullable=False)  # 0 = Monday, 6 = Sunday
     hour_utc: Mapped[int] = mapped_column(default=9, nullable=False)  # 0-23 UTC

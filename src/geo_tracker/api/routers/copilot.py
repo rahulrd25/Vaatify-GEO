@@ -3,7 +3,7 @@ Agent Copilot & Autonomous Recommendations Router.
 Handles natural language GEO advisory chat, structured proposal generation, and optimization suggestions.
 """
 import datetime
-from typing import List
+from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -11,12 +11,13 @@ from src.geo_tracker.api.security.api_key import verify_api_key
 from src.geo_tracker.api.security.rate_limiter import rate_limiter
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.repository import Repository
-from src.geo_tracker.storage.models import BrandProfileModel, AgentRecommendationModel
+from src.geo_tracker.storage.models import AgentRecommendationModel, PromptModel, RunModel
 from src.geo_tracker.agent.copilot_service import CopilotAgentService, AgentChatRequest
 from src.geo_tracker.aggregation.citation_metrics import (
     calculate_overall_citation_rate,
     detect_citation_flips
 )
+from src.geo_tracker.api.utils.tenant import get_current_user_id, get_user_brand
 
 router = APIRouter(prefix="/api/v1/agent", tags=["Agent Copilot"])
 
@@ -73,16 +74,17 @@ def list_recommendations(session: Session = Depends(get_db_session)):
 )
 def agent_chat(
     request: dict,
+    user_id: Optional[str] = Depends(get_current_user_id),
     api_key: str = Depends(verify_api_key),
     session: Session = Depends(get_db_session)
 ):
     """Executes conversational Copilot reasoning with prompt injection guardrails and rate limiting."""
     rate_limiter.check_rate_limit(client_id=api_key, action="agent_chat", max_requests=30, window_seconds=60)
 
-    # Fetch live context from database
-    brand_profile_model = session.query(BrandProfileModel).first()
-    brand_name = brand_profile_model.name if brand_profile_model else "Vaatify"
-    brand_domain = brand_profile_model.domain if brand_profile_model else "vaatify.com"
+    # Fetch live context from database strictly for tenant
+    brand_profile_model = get_user_brand(session, user_id)
+    brand_name = brand_profile_model.name if brand_profile_model else "My Brand"
+    brand_domain = brand_profile_model.domain if brand_profile_model else ""
     competitors = [
         {"name": c.name, "domain": c.domain}
         for c in (brand_profile_model.competitors if brand_profile_model else [])
@@ -93,17 +95,31 @@ def agent_chat(
         "competitors": competitors
     }
 
-    repo = Repository(session)
-    active_prompts = [
-        {"id": p.id, "prompt_text": p.prompt_text, "brand": p.brand}
-        for p in repo.get_active_prompts()
-    ]
+    if user_id:
+        p_query = session.query(PromptModel).filter(PromptModel.active == True)
+        if brand_profile_model:
+            p_query = p_query.filter((PromptModel.brand_id == brand_profile_model.id) | (PromptModel.user_id == user_id))
+        else:
+            p_query = p_query.filter(PromptModel.user_id == user_id)
+        active_prompts_models = p_query.all()
+        active_prompts = [
+            {"id": p.id, "prompt_text": p.prompt_text, "brand": p.brand}
+            for p in active_prompts_models
+        ]
+        p_ids = [p["id"] for p in active_prompts]
+        user_runs = session.query(RunModel).filter(RunModel.prompt_id.in_(p_ids)).all() if p_ids else []
+    else:
+        repo = Repository(session)
+        active_prompts = [
+            {"id": p.id, "prompt_text": p.prompt_text, "brand": p.brand}
+            for p in repo.get_active_prompts()
+        ]
+        user_runs = repo.get_all_runs()
 
-    all_runs = repo.get_all_runs()
     metrics = {
-        "overall_share_of_voice": round(calculate_overall_citation_rate(all_runs), 2),
-        "total_evaluations": len(all_runs),
-        "flips_count": len(detect_citation_flips(all_runs))
+        "overall_share_of_voice": round(calculate_overall_citation_rate(user_runs), 2),
+        "total_evaluations": len(user_runs),
+        "flips_count": len(detect_citation_flips(user_runs))
     }
 
     chat_req = AgentChatRequest.model_validate(request)
