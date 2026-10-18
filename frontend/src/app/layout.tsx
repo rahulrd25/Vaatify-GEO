@@ -7,13 +7,8 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/favicon-dark.png', media: '(prefers-color-scheme: dark)', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-light.png', media: '(prefers-color-scheme: light)', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    shortcut: '/icon.svg',
   },
 };
 
