@@ -1,0 +1,35 @@
+# Git and development
+.git
+.gitignore
+.github
+.agents
+.gemini
+
+# Python virtual environment and caches
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+
+# Unit and integration test suites (not needed in production container)
+tests/
+
+# Frontend (deployed independently, e.g. on Vercel)
+frontend/
+
+# Local databases and SQLite files
+*.db
+*.sqlite
+geo_tracker.db
+
+# Documentation artifacts and scratch files
+weekly_report*.md
+*.tmp
+.DS_Store
+
+# Secrets and local environment files
+.env
+.env.local
+.env.*.local

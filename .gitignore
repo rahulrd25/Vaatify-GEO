@@ -30,3 +30,5 @@ frontend/.env*
 .vscode/
 .idea/
 scratch/
+weekly_report*.md
+
