@@ -132,6 +132,8 @@ class MonitoringScheduler:
                 if sch.next_run_at and sch.next_run_at <= now:
                     due_schedules.append({
                         "id": sch.id,
+                        "user_id": sch.user_id,
+                        "brand_id": sch.brand_id,
                         "brand": sch.brand,
                         "frequency": sch.frequency,
                         "day_of_week": sch.day_of_week,
@@ -160,6 +162,8 @@ class MonitoringScheduler:
 
         brand_name = sch_info["brand"]
         sch_id = sch_info["id"]
+        user_id = sch_info.get("user_id")
+        brand_id = sch_info.get("brand_id")
 
         async with self.semaphore:
             logger.info(f"⚡ [Scheduler] Executing scheduled evaluation for brand '{brand_name}'...")
@@ -178,7 +182,10 @@ class MonitoringScheduler:
             try:
                 # Run the pipeline in an executor thread so it doesn't block the async event loop
                 loop = asyncio.get_running_loop()
-                await loop.run_in_executor(None, lambda: run_pipeline(mock_external_calls=False))
+                await loop.run_in_executor(
+                    None,
+                    lambda: run_pipeline(user_id=user_id, brand_id=brand_id)
+                )
                 logger.info(f"✓ [Scheduler] Completed scheduled evaluation for brand '{brand_name}'.")
             except Exception as e:
                 logger.error(f"❌ [Scheduler] Scheduled run failed for '{brand_name}': {e}")

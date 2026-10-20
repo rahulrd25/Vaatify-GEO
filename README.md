@@ -228,6 +228,41 @@ All `/api/v1/*` endpoints require the `X-API-Key` header and accept `Authorizati
 
 ---
 
+## Production Deployment (Fly.io)
+
+The backend is packaged as a full-browser Docker container pre-configured with Python 3.12, Playwright, and Headless Chromium to support live Google AI Overview extraction alongside multi-engine API collectors.
+
+### 1. Initial Setup
+Ensure `flyctl` is installed and authenticated:
+```bash
+fly auth login
+```
+
+### 2. Configure Secrets (Environment Variables)
+Set required production secrets on Fly:
+```bash
+fly secrets set \
+  DATABASE_URL="your-supabase-postgres-connection-string" \
+  SUPABASE_URL="https://your-project.supabase.co" \
+  SUPABASE_KEY="your-supabase-anon-or-service-key" \
+  SUPABASE_JWT_SECRET="your-supabase-jwt-secret" \
+  OPENAI_API_KEY="your-openai-api-key" \
+  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
+```
+
+*(Optional engine keys can be added similarly: `GEMINI_API_KEY`, `PERPLEXITY_API_KEY`, `TYPESAFE_API_KEY`)*
+
+### 3. Deploy
+Launch the container using Fly's remote builders (no local Docker daemon required):
+```bash
+fly deploy
+```
+
+Fly will build the container image, run `/health` readiness probes, execute automatic Alembic migrations on startup, and route public traffic via HTTPS.
+
+---
+
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
