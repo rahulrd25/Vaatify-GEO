@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAllPosts } from '@/lib/blog';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://geo.vaatify.com';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://vaatify.com';
   const lastModified = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -37,7 +37,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/login`,
+      url: `${baseUrl}/terms`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/privacy`,
       lastModified,
       changeFrequency: 'monthly',
       priority: 0.5,

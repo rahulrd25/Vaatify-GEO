@@ -20,18 +20,18 @@ export default function MarketingNav({ initialUser }: MarketingNavProps = {}) {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="w-full px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Left-aligned brand and navigation links */}
         <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center">
             <Image
-              src="/icon.svg"
-              alt="Vaatify Logo"
-              width={28}
-              height={28}
-              className="w-7 h-7"
+              src="/logo.svg"
+              alt="Vaatify GEO"
+              width={160}
+              height={42}
+              priority
+              className="h-9 sm:h-10 w-auto object-contain"
             />
-            <span className="font-bold text-base tracking-tight text-slate-900">Vaatify</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">

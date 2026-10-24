@@ -106,7 +106,7 @@ The platform unifies the **Vaatify Web Presence & Marketing Surface** (high-perf
 │   │   ├── api.ts                  # API client & auth headers factory
 │   │   ├── blog.ts                 # MDX file reading and metadata parser
 │   │   └── supabase/               # Browser & server Supabase SSR clients
-│   └── src/middleware.ts           # Edge authentication & session refresh middleware
+│   └── src/proxy.ts                # Next.js 16 network proxy & Edge session refresh
 ├── src/geo_tracker/
 │   ├── agent/                      # Autonomous Copilot service & safety guardrails
 │   ├── aggregation/                # Share of Voice & citation flip calculators
