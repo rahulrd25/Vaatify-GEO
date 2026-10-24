@@ -11,6 +11,7 @@ from sqlalchemy import select
 
 from src.geo_tracker.storage.models import BrandProfileModel
 from src.geo_tracker.api.security.jwt_auth import verify_supabase_jwt
+from src.geo_tracker.config import is_production
 
 
 def get_current_user_id(
@@ -41,8 +42,7 @@ def get_current_user_id(
                     headers={"WWW-Authenticate": "Bearer"},
                 )
 
-    is_prod = os.getenv("ENV", "development").lower() == "production"
-    if is_prod:
+    if is_production():
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required: missing Bearer token in Authorization header.",

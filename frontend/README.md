@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vaatify — Next.js 16 Web Application (vaatify.com)
 
-## Getting Started
+This is the official web frontend and user-facing application for **Vaatify** ([vaatify.com](https://vaatify.com)).
 
-First, run the development server:
+It unifies the **Marketing & Educational Surface** (landing page, solutions, pricing, documentation, MDX blog, and interactive ROI calculator) with the **SaaS Product Platform** (Supabase authentication, multi-tenant brand onboarding wizard, real-time Share of Voice dashboard, and autonomous AI Copilot).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Architecture & Route Groups
+
+Built with **Next.js 16 (App Router)** and **Tailwind CSS / Vanilla styling tokens**:
+
+* `src/app/(marketing)/` — Public-facing SEO pages:
+  - `/` — Homepage with interactive value propositions, engine matrix, and dynamic live previews
+  - `/solutions` — Platform feature breakdowns and use-cases
+  - `/pricing` — Clear pricing tiers (Starter, Growth, Enterprise) with yearly billing discounts
+  - `/roi` — Interactive citation ROI & revenue estimator
+  - `/docs` — Getting started guide and API documentation
+  - `/blog` — MDX-powered technical articles and GEO research
+* `src/app/(auth)/` — Supabase authentication:
+  - `/login` — Account sign-in with redirect parameter safety
+  - `/signup` — Work email registration and verification
+* `src/app/dashboard/` — SaaS Product Application:
+  - Multi-tenant brand account onboarding wizard
+  - Live Share of Voice (SoV) and citation rate gauges
+  - Engine-by-engine breakdown (ChatGPT, Perplexity, Gemini, Claude, Google AI Overviews)
+  - Competitor citation benchmarking matrix
+  - Query management & intent classification
+  - Autonomous AI Copilot chat with strategic suggestions
+* `src/app/robots.ts` & `src/app/sitemap.ts` — Dynamic Next.js Metadata API generators
+* `public/llms.txt` — Structured manifest formatted specifically for AI scrapers and LLMs
+* `src/middleware.ts` — Edge middleware validating sessions with `@supabase/ssr`
+
+---
+
+## Local Development
+
+### 1. Environment Variables
+
+Create `.env.local` inside `frontend/`:
+
+```ini
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8005
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install & Run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev -- --port 3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Verification & Quality Checks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Before committing or pushing changes:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Type check TypeScript code
+npx tsc --noEmit
 
-## Deploy on Vercel
+# Run ESLint
+npm run lint
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Build production bundle
+npm run build
+```

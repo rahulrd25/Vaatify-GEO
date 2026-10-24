@@ -1,14 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { ArrowRight, Lock, Mail, Loader2, CheckCircle2, RefreshCw } from 'lucide-react';
 
-export default function AuthView() {
-  const { login, signup } = useAuth();
-  const [isSignUp, setIsSignUp] = useState(true);
+interface AuthViewProps {
+  initialMode?: 'login' | 'signup';
+}
+
+export default function AuthView({ initialMode = 'signup' }: AuthViewProps) {
+  const router = useRouter();
+  const { user, login, signup } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(initialMode === 'signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -16,6 +23,29 @@ export default function AuthView() {
   const [verificationSentEmail, setVerificationSentEmail] = useState('');
   const [sentNoticeEmail, setSentNoticeEmail] = useState('');
   const [resendStatus, setResendStatus] = useState('');
+
+  const getRedirectTarget = () => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect');
+      if (
+        redirect &&
+        redirect.startsWith('/') &&
+        !redirect.startsWith('//') &&
+        !redirect.startsWith('/\\')
+      ) {
+        return redirect;
+      }
+    }
+    return '/dashboard';
+  };
+
+  // If already authenticated, redirect straight to target or dashboard
+  useEffect(() => {
+    if (user) {
+      router.push(getRedirectTarget());
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +72,8 @@ export default function AuthView() {
         } else if (res.requiresEmailConfirmation) {
           setVerificationSentEmail(email);
           setSentNoticeEmail(email);
+        } else {
+          router.push(getRedirectTarget());
         }
       } else {
         const res = await login(email, password);
@@ -51,6 +83,8 @@ export default function AuthView() {
           } else {
             setErrorMsg(res.error || 'Invalid credentials. Please verify your email and password.');
           }
+        } else {
+          router.push(getRedirectTarget());
         }
       }
     } catch {
@@ -302,16 +336,29 @@ export default function AuthView() {
             <span>
               {isSignUp ? 'Already have an account?' : "Don't have an account yet?"}
             </span>
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(!isSignUp);
-                setErrorMsg('');
-              }}
-              className="font-semibold text-[#FE4D03] hover:text-[#d03e00] cursor-pointer"
-            >
-              {isSignUp ? 'Sign In' : 'Create Account'}
-            </button>
+            {isSignUp ? (
+              <Link
+                href="/login"
+                onClick={() => {
+                  setIsSignUp(false);
+                  setErrorMsg('');
+                }}
+                className="font-semibold text-[#FE4D03] hover:text-[#d03e00] cursor-pointer"
+              >
+                Sign In
+              </Link>
+            ) : (
+              <Link
+                href="/signup"
+                onClick={() => {
+                  setIsSignUp(true);
+                  setErrorMsg('');
+                }}
+                className="font-semibold text-[#FE4D03] hover:text-[#d03e00] cursor-pointer"
+              >
+                Create Account
+              </Link>
+            )}
           </div>
         </div>
       </div>

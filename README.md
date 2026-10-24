@@ -1,68 +1,80 @@
-# Vaatify GEO — Generative Engine Optimization & AI Visibility Engine
+# Vaatify — Generative Engine Optimization & AI Visibility Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16.3-black.svg)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)](https://fastapi.tiangolo.com/)
 [![Alembic](https://img.shields.io/badge/Alembic-1.14+-red.svg)](https://alembic.sqlalchemy.org/)
-[![Tests](https://img.shields.io/badge/tests-62%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-73%20passed-brightgreen.svg)]()
 
-**Vaatify GEO** (`geo.vaatify.com`) is an enterprise-grade AI Search Visibility & Generative Engine Optimization platform. It continuously tracks brand citations, measures real-time Share of Voice (SoV) across AI search engines (ChatGPT, Perplexity, Gemini, Claude), benchmarks against competitors, and provides autonomous AI Copilot strategies to win top citation placements in AI answers.
+**Vaatify** ([vaatify.com](https://vaatify.com)) is the unified product platform and Generative Engine Optimization (GEO) intelligence engine for modern brands. It continuously tracks brand citations, measures real-time Share of Voice (SoV) across commercial AI engines (ChatGPT, Perplexity, Gemini, Claude, and Google AI Overviews), benchmarks against competitors, and provides autonomous AI Copilot strategies to win top recommendation placements in AI search results.
+
+The platform unifies the **Vaatify Web Presence & Marketing Surface** (high-performance SEO, documentation, pricing, interactive ROI calculator, MDX technical blog, LLM-crawling manifest, and dynamic sitemaps) with the **Full SaaS Product Application** (authentication, multi-tenant onboarding wizard, live analytics overview, citation drift alerts, and autonomous Copilot).
 
 ---
 
 ## Key Capabilities
 
-* **Multi-Tenant Account Partitioning**: Complete tenant isolation where brand profiles, target prompts, evaluation runs, drift alerts, and Copilot history are partitioned by `user_id` and `brand_id` with foreign-key cascade deletes.
-* **Cryptographic Supabase JWT Authentication**: Direct verification of Supabase Bearer JWTs supporting local constant-time HMAC-SHA256 signature checking (`SUPABASE_JWT_SECRET`) and Supabase Auth API validation with in-memory TTL caching.
-* **Automated User Onboarding**: Zero-friction onboarding detecting company brand names and domains directly from corporate work emails (filtering public webmail providers), with Copilot-suggested buyer search queries.
-* **Multi-Engine AI Search Monitoring**: Multi-threaded parallel collectors across Perplexity Sonar, Gemini Grounded Search, Claude, OpenAI Search, and Playwright headless browsers.
-* **Share of Voice (SoV) Intelligence**: Granular brand citation rates, engine-by-engine breakdown, citation flips detection, and competitor dominance scoring.
-* **Autonomous GEO Copilot**: AI optimization agent providing actionable content recommendations, structural schema fixes, and citation strategies with prompt-injection guardrails.
+* **Unified Product Platform (`vaatify.com`)**: Product-led design seamlessly linking educational resources, pricing, interactive ROI estimators, and live product onboarding into a single cohesive experience.
+* **Multi-Engine AI Search Monitoring**: Multi-threaded collectors tracking queries across Perplexity Sonar, Google Gemini Grounded Search, Anthropic Claude, OpenAI Search, and Playwright headless browser collectors for Google AI Overviews.
+* **Cryptographic In-Memory JWT Authentication**: Sub-millisecond (<0.1ms) Bearer token verification using local constant-time HMAC-SHA256 signature checking (`SUPABASE_JWT_SECRET`) with automatic fallback to Supabase Auth API validation and TTL caching.
+* **Multi-Tenant Account Partitioning**: Complete tenant isolation where brand profiles, target prompts, evaluation runs, drift alerts, and Copilot history are strictly partitioned by `user_id` and `brand_id` with foreign-key cascade deletes.
+* **Automated User Onboarding**: Frictionless brand detection extracting company brand names and domains directly from corporate work emails (filtering public webmail providers), paired with AI Copilot suggested buyer queries.
+* **Share of Voice (SoV) & Citation Intelligence**: Granular brand citation rates, engine-by-engine breakdown, competitor dominance scoring, and real-time detection of citation flips.
+* **Autonomous GEO Copilot**: Proactive AI optimization agent providing actionable content recommendations, structured schema fixes, and citation gap strategies with strict prompt-injection guardrails.
+* **Machine-Readable LLM & SEO Optimization**: Features native `/llms.txt`, programmatic `/robots.txt` via Next.js Metadata API, dynamic XML sitemaps (`/sitemap.xml`), and structured OpenGraph metadata.
 * **Automated Background Scheduler**: Continuous evaluation scheduler with concurrency semaphore limits and staggered tenant dispatch.
-* **Automated Database Migrations**: 100% production schema lifecycle managed through Alembic, running and verifying schema updates to `head` automatically on application startup.
+* **Self-Migrating Database**: 100% production schema lifecycle managed through Alembic, running and verifying schema updates to `head` automatically on application boot.
 
 ---
 
 ## Architecture Overview
 
 ```
-                                    ┌────────────────────────────────────────┐
-                                    │    Next.js 16 Dashboard (Port 3000)    │
-                                    │  (Auth, Onboarding, Agent, Overview)   │
-                                    └──────────────────┬─────────────────────┘
-                                                       │ Headers: Authorization: Bearer <jwt>
-                                                       │          X-API-Key: <key>
-                                                       ▼
-                                    ┌────────────────────────────────────────┐
-                                    │      FastAPI Gateway (Port 8005)       │
-                                    │  (JWT Verifier, Rate Limiter, CORS)    │
-                                    └───────┬────────────────────────┬───────┘
-                                            │                        │
-                  ┌─────────────────────────┴────────┐       ┌───────┴────────────────────────┐
-                  │       Modular Domain Routers     │       │     AI Search Connectors       │
-                  ├──────────────────────────────────┤       ├────────────────────────────────┤
-                  │ • /onboarding - Brand Setup      │       │ • Perplexity Sonar API         │
-                  │ • /metrics    - SoV & Flips      │       │ • Google Gemini Grounded       │
-                  │ • /prompts    - Query Management │       │ • Anthropic Claude             │
-                  │ • /pipeline   - Multi-Engine Run │       │ • OpenAI Search                │
-                  │ • /profile    - Brand & Comps    │       │ • Playwright Browser Collector │
-                  │ • /copilot    - AI Agent Defense │       └────────────────────────────────┘
-                  │ • /schedule   - Cron Automation  │
-                  └─────────────────┬────────────────┘
-                                    │
-                                    ▼
-                      ┌───────────────────────────┐
-                      │    PostgreSQL (Supabase)  │
-                      ├───────────────────────────┤
-                      │ • brand_profiles (user_id)│
-                      │ • competitors (brand_id)  │
-                      │ • prompts (brand_id)      │
-                      │ • runs (FK prompt_id)     │
-                      │ • drift_alerts            │
-                      │ • agent_recommendations   │
-                      │ • monitoring_schedules    │
-                      └───────────────────────────┘
+                                    ┌─────────────────────────────────────────────────────────┐
+                                    │               Next.js 16 Web Application                │
+                                    │                      (vaatify.com)                      │
+                                    ├────────────────────────────┬────────────────────────────┤
+                                    │    Marketing & SEO Surface │    SaaS Product Dashboard  │
+                                    │  • / - Landing & Hero      │  • /dashboard - SoV & Runs │
+                                    │  • /pricing, /solutions    │  • /login, /signup         │
+                                    │  • /docs, /blog (MDX)      │  • Step Wizard Onboarding  │
+                                    │  • /roi - ROI Calculator   │  • Agent Copilot Advisory  │
+                                    │  • /llms.txt, /robots.txt  │  • Competitor Matrix       │
+                                    └─────────────┬──────────────┴─────────────┬──────────────┘
+                                                  │                            │
+                                                  │ Requests: Bearer <jwt>     │
+                                                  │           X-API-Key        │
+                                                  ▼                            ▼
+                                    ┌─────────────────────────────────────────────────────────┐
+                                    │               FastAPI Gateway & Engine                  │
+                                    │       (HMAC JWT Verifier, Rate Limiter, CORS)           │
+                                    └─────────────┬────────────────────────────┬──────────────┘
+                                                  │                            │
+                        ┌─────────────────────────┴────────┐         ┌─────────┴────────────────────────┐
+                        │       Modular Domain Routers     │         │       AI Search Connectors       │
+                        ├──────────────────────────────────┤         ├──────────────────────────────────┤
+                        │ • /onboarding - Brand Setup      │         │ • Perplexity Sonar API           │
+                        │ • /metrics    - SoV & Flips      │         │ • Google Gemini Grounded Search  │
+                        │ • /prompts    - Query Management │         │ • Anthropic Claude 3.5           │
+                        │ • /pipeline   - Multi-Engine Run │         │ • OpenAI Search Models           │
+                        │ • /profile    - Brand & Comps    │         │ • Playwright Browser Collector   │
+                        │ • /copilot    - Autonomous Agent │         │   (Google AI Overviews)          │
+                        │ • /schedule   - Cron Automation  │         └──────────────────────────────────┘
+                        └─────────────────┬────────────────┘
+                                          │
+                                          ▼
+                            ┌───────────────────────────┐
+                            │    PostgreSQL (Supabase)  │
+                            ├───────────────────────────┤
+                            │ • brand_profiles (user_id)│
+                            │ • competitors (brand_id)  │
+                            │ • prompts (brand_id)      │
+                            │ • runs (FK prompt_id)     │
+                            │ • drift_alerts            │
+                            │ • agent_recommendations   │
+                            │ • monitoring_schedules    │
+                            └───────────────────────────┘
 ```
 
 ---
@@ -76,33 +88,46 @@
 ├── config/
 │   ├── competitors.yaml            # Fallback benchmark competitor definitions
 │   └── prompts.yaml                # Monitored query templates & intent categories
-├── frontend/                       # Next.js 16 Web Dashboard
-│   ├── src/app/                    # App Router pages & layout
+├── frontend/                       # Next.js 16 Web Application (vaatify.com)
+│   ├── content/blog/               # MDX technical blog posts & GEO research
+│   ├── public/                     # Static assets & llms.txt AI crawler manifest
+│   ├── src/app/
+│   │   ├── (auth)/                 # Auth routes (/login, /signup)
+│   │   ├── (marketing)/            # Marketing routes (/, /pricing, /solutions, /docs, /blog, /roi)
+│   │   ├── dashboard/              # Full SaaS Product Dashboard (/dashboard)
+│   │   ├── robots.ts               # Programmatic Next.js Metadata robots.txt
+│   │   └── sitemap.ts              # Programmatic Next.js XML sitemap generator
 │   ├── src/components/
-│   │   ├── auth/                   # Supabase authentication view
-│   │   ├── onboarding/             # Step-by-step brand onboarding wizard
-│   │   ├── views/                  # Tabbed views (Overview, Queries, Explorer, Settings, Agent)
-│   │   └── AgentCopilot.tsx        # Interactive AI advisory copilot
-│   ├── src/context/AuthContext.tsx # Supabase Auth state & session token provider
-│   ├── src/lib/api.ts              # API URL helper & getAuthHeaders factory
-│   └── src/lib/emailDomain.ts      # Work email domain & brand extraction
+│   │   ├── auth/                   # Supabase authentication views
+│   │   ├── dashboard/              # Product dashboard components & tab views
+│   │   ├── marketing/              # Marketing navigation, hero, pricing, & ROI calculator
+│   │   └── onboarding/             # Step-by-step corporate brand setup wizard
+│   ├── src/lib/
+│   │   ├── api.ts                  # API client & auth headers factory
+│   │   ├── blog.ts                 # MDX file reading and metadata parser
+│   │   └── supabase/               # Browser & server Supabase SSR clients
+│   └── src/middleware.ts           # Edge authentication & session refresh middleware
 ├── src/geo_tracker/
 │   ├── agent/                      # Autonomous Copilot service & safety guardrails
 │   ├── aggregation/                # Share of Voice & citation flip calculators
 │   ├── api/
 │   │   ├── middleware/             # Production/development CORS configuration
 │   │   ├── routers/                # Modular domain routers (onboarding, metrics, copilot, etc.)
-│   │   ├── security/               # Cryptographic JWT verifier, API key auth, rate limiter
+│   │   ├── security/               # Cryptographic JWT verifier, API key auth, bounded rate limiter
 │   │   └── utils/                  # Tenant resolution & email domain parser
 │   ├── classification/             # JEV & domain matching algorithms
-│   ├── connectors/                 # LLM & AI search engine collectors
+│   ├── connectors/                 # Commercial LLM & AI search engine collectors
 │   ├── scheduler/                  # Background monitoring scheduler engine
 │   └── storage/
-│       ├── migrations/             # Alembic migration environment & versions (001_initial_schema.py)
+│       ├── migrations/             # Alembic migration environment & versions
 │       ├── models.py               # Multi-tenant SQLAlchemy models
 │       ├── session.py              # Engine factory, health checks, & startup migration runner
 │       └── repository.py           # Database persistence repository
-└── tests/                          # 62 unit & integration tests (100% passing)
+└── tests/                          # 73 unit & integration tests (100% passing)
+    ├── unit/
+    │   ├── test_security_audit_regressions.py  # Security regression tests & static pre-push scanners
+    │   └── test_multi_tenant_isolation.py      # Account boundary verification
+    └── integration/
 ```
 
 ---
@@ -135,7 +160,7 @@ ENV=development
 DATABASE_URL=postgresql://postgres:password@db.xxxx.supabase.co:5432/postgres
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
-SUPABASE_JWT_SECRET=your_jwt_secret_for_local_hmac   # Optional (falls back to Supabase Auth API)
+SUPABASE_JWT_SECRET=your_supabase_jwt_secret   # Enables sub-millisecond local HMAC verification
 
 # AI Search Engine APIs
 PERPLEXITY_API_KEY=pplx-...
@@ -145,20 +170,20 @@ OPENAI_API_KEY=sk-proj-...
 TYPESAFE_API_KEY=...
 ```
 
-### 2. Run the Backend
+### 2. Run the Backend API
 
 ```bash
 # Install dependencies
 uv sync
 
-# Start FastAPI server (database migrations run automatically to head on startup)
+# Start FastAPI server (database migrations execute automatically to head on startup)
 uv run uvicorn app.main:app --host 127.0.0.1 --port 8005 --reload
 ```
 
 * Swagger API Documentation: [http://localhost:8005/docs](http://localhost:8005/docs)
 * Health Probe: [http://localhost:8005/health](http://localhost:8005/health)
 
-### 3. Run the Frontend Dashboard
+### 3. Run the Frontend (Web Presence & SaaS Dashboard)
 
 In a separate terminal:
 
@@ -168,13 +193,17 @@ npm install
 npm run dev -- --port 3000
 ```
 
-* Web Dashboard: [http://localhost:3000](http://localhost:3000)
+* Web Application: [http://localhost:3000](http://localhost:3000)
+* Marketing & SEO Surface: [http://localhost:3000/](http://localhost:3000/)
+* Product Dashboard: [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
 
 ---
 
 ## Testing & Quality Assurance
 
-### Run Test Suite (62 Tests)
+Our CI/CD pipeline enforces static analysis, security scans, and 100% test passing before code changes can be merged.
+
+### Run Backend & Security Test Suite (73 Tests)
 
 ```bash
 PYTHONPATH=. uv run pytest tests/
@@ -190,79 +219,55 @@ npm run lint
 
 ---
 
-## API Endpoints Reference
+## Security Architecture
 
-All `/api/v1/*` endpoints require the `X-API-Key` header and accept `Authorization: Bearer <jwt_token>`.
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/health` | Public health check probe |
-| `GET` | `/api/v1/status` | Protected status check |
-| `GET` | `/api/v1/onboarding/parse-email` | Parse corporate work email for company domain |
-| `POST` | `/api/v1/onboarding/suggest-queries` | Generate high-intent buyer queries for brand |
-| `GET` | `/api/v1/onboarding/status` | Check tenant onboarding & brand account status |
-| `POST` | `/api/v1/onboarding/complete` | Complete onboarding & persist brand profile |
-| `GET` | `/api/v1/profile` | Get active tenant brand profile & competitor matrix |
-| `PUT` | `/api/v1/profile` | Update tenant brand profile & competitor domains |
-| `GET` | `/api/v1/prompts` | List tenant target queries with intent classification |
-| `POST` | `/api/v1/prompts` | Add a new monitored query prompt |
-| `DELETE`| `/api/v1/prompts/{id}` | Deactivate/remove a monitored prompt |
-| `GET` | `/api/v1/metrics/overview` | Overall Share of Voice, per-engine metrics, competitors |
-| `GET` | `/api/v1/runs` | Paginated citation evaluations across search engines |
-| `POST` | `/api/v1/pipeline/run` | Trigger evaluation across active search engines |
-| `POST` | `/api/v1/agent/chat` | AI Copilot advisory chat (with prompt injection defense) |
-| `GET` | `/api/v1/schedule` | Get automated monitoring schedule for tenant |
-| `PUT` | `/api/v1/schedule` | Update automated monitoring frequency (daily, weekly, manual) |
-| `POST` | `/api/v1/schedule/trigger` | Manually dispatch scheduled evaluation audit |
-
----
-
-## Security Model
-
-* **Cryptographic JWT Verification**: Enforces Supabase Bearer token verification using constant-time HMAC-SHA256 checking or direct Supabase Auth validation. Spoofed client headers are neutralized.
-* **Strict Multi-Tenant Isolation**: Queries and data operations are strictly scoped to the authenticated tenant (`user_id` / `brand_id`).
+* **Cryptographic In-Memory JWT Verification**: Verifies incoming Supabase Bearer tokens using constant-time HMAC-SHA256 checking against `SUPABASE_JWT_SECRET`. Token tampering is rejected in `<0.1ms` without network overhead.
+* **Strict Multi-Tenant Isolation**: Queries and mutations are enforced strictly against `current_user_id` and the tenant's registered `brand_id`.
+* **BOLA / IDOR Protection**: Endpoint authorization guards prevent authenticated users from reading, modifying, or overwriting other tenants' brands or prompt recommendations.
 * **Constant-Time Key Verification**: All API key validations use `secrets.compare_digest` to prevent timing attacks.
-* **Sliding-Window Rate Limiting**: In-memory sliding window rate limiters protect execution, copilot, and crawl endpoints.
-* **Prompt Injection Defense**: Sanitization and input validation guardrails protect AI Copilot agents against adversarial instruction override.
-* **Strict CORS Policy**: Production enforces explicit origin whitelisting (`ALLOWED_ORIGINS`).
+* **DoS & Memory Leak Prevention**: The in-memory sliding-window rate limiter is capped at `10,000` keys with automated periodic pruning of expired timestamps to prevent memory exhaustion attacks.
+* **Denial-of-Wallet Guards**: High-cost LLM endpoints (such as onboarding query suggestions) enforce IP-based rate limiting (10 req/min).
+* **Open Redirect (CWE-601) Neutralization**: Redirect parameters in authentication flows are validated to reject protocol-relative URLs (`//` and `/\`).
+* **OpenAPI Secret Sanitization**: OpenAPI specs (`/docs` and `/openapi.json`) use generic placeholder syntax, ensuring secret keys are never exposed in documentation.
+* **Strict Production CORS**: Whitelists only explicit production domains (`https://vaatify.com` and `https://geo.vaatify.com`), blocking wildcard regexes.
 
 ---
 
-## Production Deployment (Fly.io)
+## Production Deployment
 
-The backend is packaged as a full-browser Docker container pre-configured with Python 3.12, Playwright, and Headless Chromium to support live Google AI Overview extraction alongside multi-engine API collectors.
+### Backend (Fly.io)
 
-### 1. Initial Setup
-Ensure `flyctl` is installed and authenticated:
+The backend is containerized with Python 3.12, Playwright, and Headless Chromium to execute live AI Overview DOM scraping alongside multi-engine API collectors.
+
 ```bash
-fly auth login
-```
-
-### 2. Configure Secrets (Environment Variables)
-Set required production secrets on Fly:
-```bash
+# Set production secrets
 fly secrets set \
-  DATABASE_URL="your-supabase-postgres-connection-string" \
-  SUPABASE_URL="https://your-project.supabase.co" \
-  SUPABASE_KEY="your-supabase-anon-or-service-key" \
-  SUPABASE_JWT_SECRET="your-supabase-jwt-secret" \
-  OPENAI_API_KEY="your-openai-api-key" \
-  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
-```
+  DATABASE_URL="postgresql://..." \
+  SUPABASE_URL="https://..." \
+  SUPABASE_ANON_KEY="..." \
+  SUPABASE_JWT_SECRET="..." \
+  API_KEY="..." \
+  OPENAI_API_KEY="..." \
+  ALLOWED_ORIGINS="https://vaatify.com" \
+  --app vaatify-geo-engine
 
-*(Optional engine keys can be added similarly: `GEMINI_API_KEY`, `PERPLEXITY_API_KEY`, `TYPESAFE_API_KEY`)*
-
-### 3. Deploy
-Launch the container using Fly's remote builders (no local Docker daemon required):
-```bash
+# Deploy
 fly deploy
 ```
 
-Fly will build the container image, run `/health` readiness probes, execute automatic Alembic migrations on startup, and route public traffic via HTTPS.
+### Frontend (Vercel)
+
+The frontend deploys as a Next.js 16 Edge-ready application on Vercel with automatic SSR authentication middleware, static page generation, and ISR for MDX blog posts:
+
+```bash
+# Configure Vercel environment variables:
+# NEXT_PUBLIC_SUPABASE_URL
+# NEXT_PUBLIC_SUPABASE_ANON_KEY
+# NEXT_PUBLIC_API_URL=https://vaatify-geo-engine.fly.dev
+```
 
 ---
 
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-

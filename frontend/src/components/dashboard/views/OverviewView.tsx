@@ -1,7 +1,7 @@
 'use client';
 
-import KpiOverview from '@/components/KpiOverview';
-import AnalyticsCharts from '@/components/AnalyticsCharts';
+import KpiOverview from '../KpiOverview';
+import AnalyticsCharts from '../AnalyticsCharts';
 import { EngineRateItem, CompetitorItem } from '@/types';
 
 interface OverviewViewProps {

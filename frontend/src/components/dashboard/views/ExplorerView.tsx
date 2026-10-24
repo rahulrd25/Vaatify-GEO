@@ -1,6 +1,6 @@
 'use client';
 
-import PromptsExplorer from '@/components/PromptsExplorer';
+import PromptsExplorer from '../PromptsExplorer';
 import { RunItem } from '@/types';
 
 interface ExplorerViewProps {

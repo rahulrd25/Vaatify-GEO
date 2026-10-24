@@ -2,15 +2,15 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.geo_tracker.config import is_production
+
 def setup_cors(app: FastAPI) -> None:
     """
     Configures Cross-Origin Resource Sharing (CORS) middleware.
     In production: Enforces strict explicit origin whitelist and restricted headers.
     In development: Accommodates localhost, local network IPs, and standard dev ports.
     """
-    is_prod = os.getenv("ENV", "development").lower() == "production"
-
-    if is_prod:
+    if is_production():
         # Strict explicit whitelist for production deployments
         production_origins = [
             "https://geo.vaatify.com",

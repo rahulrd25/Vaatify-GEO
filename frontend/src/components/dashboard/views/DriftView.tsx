@@ -1,6 +1,6 @@
 'use client';
 
-import DriftFeed from '@/components/DriftFeed';
+import DriftFeed from '../DriftFeed';
 import { FlipItem } from '@/types';
 
 interface DriftViewProps {
