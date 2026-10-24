@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Shield, Building2, Scale, Mail, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Building2, Scale, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | Vaatify GEO',

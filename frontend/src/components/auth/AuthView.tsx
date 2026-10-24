@@ -35,23 +35,23 @@ export default function AuthView({ initialMode = 'signup' }: AuthViewProps) {
   const [verificationSentEmail, setVerificationSentEmail] = useState('');
   const [sentNoticeEmail, setSentNoticeEmail] = useState('');
   const [resendStatus, setResendStatus] = useState('');
-  const [loginGreeting, setLoginGreeting] = useState('Welcome back');
-
-  // Greet purely as per time of day (hydration-safe)
-  useEffect(() => {
+  const [loginGreeting] = useState(() => {
     try {
       const hour = new Date().getHours();
-      if (hour >= 5 && hour < 12) {
-        setLoginGreeting('Good morning');
-      } else if (hour >= 12 && hour < 17) {
-        setLoginGreeting('Good afternoon');
-      } else {
-        setLoginGreeting('Good evening');
-      }
+      if (hour >= 5 && hour < 12) return 'Good morning';
+      if (hour >= 12 && hour < 17) return 'Good afternoon';
+      return 'Good evening';
     } catch {
-      setLoginGreeting('Welcome back');
+      return 'Welcome back';
     }
-  }, []);
+  });
+
+  const [prevInitialMode, setPrevInitialMode] = useState(initialMode);
+  if (initialMode !== prevInitialMode) {
+    setPrevInitialMode(initialMode);
+    setIsSignUp(initialMode === 'signup');
+    setErrorMsg('');
+  }
 
   const getRedirectTarget = () => {
     if (typeof window !== 'undefined') {
@@ -75,12 +75,6 @@ export default function AuthView({ initialMode = 'signup' }: AuthViewProps) {
       router.push(getRedirectTarget());
     }
   }, [user, router]);
-
-  // Sync mode whenever route/props change
-  useEffect(() => {
-    setIsSignUp(initialMode === 'signup');
-    setErrorMsg('');
-  }, [initialMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
