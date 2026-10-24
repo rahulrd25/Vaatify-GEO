@@ -210,13 +210,13 @@ export default function PricingPage() {
             </div>
 
             <div className="mt-10">
-              <Link
-                href="/signup"
+              <a
+                href="mailto:hello@vaatify.com?subject=Enterprise%20Inquiry%20-%20Vaatify%20GEO"
                 className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-900 bg-white border border-slate-300 hover:bg-slate-50 py-3 rounded-md transition-colors"
               >
                 <span>Contact Sales</span>
                 <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+              </a>
             </div>
           </div>
         </div>

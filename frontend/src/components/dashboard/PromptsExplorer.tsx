@@ -23,7 +23,7 @@ interface RunBatch {
 
 function formatExactTime(timestamp: string | null): { time: string; date: string; full: string } {
   if (!timestamp) {
-    return { time: '—', date: '—', full: 'No timestamp' };
+    return { time: '-', date: '-', full: 'No timestamp' };
   }
   const dateObj = new Date(timestamp);
   if (isNaN(dateObj.getTime())) {
@@ -360,7 +360,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
                                   <ExternalLink className="h-3 w-3 shrink-0" />
                                 </a>
                               ) : (
-                                <span className="text-slate-400">—</span>
+                                <span className="text-slate-400">-</span>
                               )}
                             </td>
                             <td className="py-2.5 px-3">
@@ -376,7 +376,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
                                   ))}
                                 </div>
                               ) : (
-                                <span className="text-slate-400 text-[11px]">—</span>
+                                <span className="text-slate-400 text-[11px]">-</span>
                               )}
                             </td>
                           </tr>

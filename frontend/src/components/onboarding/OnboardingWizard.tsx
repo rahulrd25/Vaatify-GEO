@@ -331,7 +331,7 @@ export default function OnboardingWizard({ onClose, onComplete }: OnboardingWiza
                   <span>Benchmark against competitors</span>
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Add 2–4 competitor domains to benchmark your Share of Voice (SOV) and win citations from them.
+                  Add 2 to 4 competitor domains to benchmark your Share of Voice (SOV) and win citations from them.
                 </p>
               </div>
 
