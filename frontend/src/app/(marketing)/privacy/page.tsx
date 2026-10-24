@@ -1,7 +1,6 @@
-import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ShieldCheck, Building2, Lock, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Building2, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Vaatify GEO',
