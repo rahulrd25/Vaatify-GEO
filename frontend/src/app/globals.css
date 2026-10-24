@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @layer base {
@@ -5,6 +6,11 @@
     @apply bg-gray-50 text-gray-900 antialiased;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   }
+}
+
+.font-subheading {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.011em;
 }
 
 .card-white {
@@ -30,4 +36,93 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Infinite Marquee Ribbon */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 50s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Continuous Animated Flow Beam for Process Chain */
+@keyframes beamFlow {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.animate-beam-flow {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 60%;
+  background: linear-gradient(90deg, transparent, #FE4D03, transparent);
+  animation: beamFlow 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Continuous Vertical Flow Beam for Process Chain */
+@keyframes verticalBeamFlow {
+  0% {
+    top: -100%;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+.animate-vertical-beam {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(180deg, transparent, #FE4D03, transparent);
+  animation: verticalBeamFlow 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Theme Radar Pulse for AI Engine Cluster */
+@keyframes pulseRadar {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.75;
+  }
+}
+
+.animate-pulse-radar {
+  animation: pulseRadar 3s ease-in-out infinite;
+}
+
+/* Subtle Floating Animation for Theme Nodes */
+@keyframes floatSoft {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-float-soft {
+  animation: floatSoft 4s ease-in-out infinite;
 }

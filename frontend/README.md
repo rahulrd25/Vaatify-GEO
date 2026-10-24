@@ -29,7 +29,7 @@ Built with **Next.js 16 (App Router)** and **Tailwind CSS / Vanilla styling toke
   - Autonomous AI Copilot chat with strategic suggestions
 * `src/app/robots.ts` & `src/app/sitemap.ts` — Dynamic Next.js Metadata API generators
 * `public/llms.txt` — Structured manifest formatted specifically for AI scrapers and LLMs
-* `src/middleware.ts` — Edge middleware validating sessions with `@supabase/ssr`
+* `src/proxy.ts` — Next.js 16 network proxy validating Edge sessions with `@supabase/ssr`
 
 ---
 

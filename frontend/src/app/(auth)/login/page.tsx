@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <AuthView initialMode="login" />;
+  return <AuthView key="login" initialMode="login" />;
 }

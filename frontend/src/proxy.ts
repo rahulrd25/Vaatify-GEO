@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -59,10 +59,12 @@ export async function middleware(request: NextRequest) {
   return supabaseResponse;
 }
 
+export default proxy;
+
 export const config = {
   matcher: [
     /*
-     * Enforces route boundary at the Edge for dashboard/app routes and auth pages,
+     * Enforces route boundary at the network edge for dashboard/app routes and auth pages,
      * while intentionally bypassing marketing pages (/pricing, /docs, /blog, /),
      * static assets, and _next/image so SEO pages load instantly with 0 overhead.
      */

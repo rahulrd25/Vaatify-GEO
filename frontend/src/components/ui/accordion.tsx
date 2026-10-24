@@ -22,13 +22,27 @@ export function Accordion({
   className,
   defaultValue = '',
   children,
+  type = 'single',
+  collapsible = true,
   ...props
 }: AccordionProps) {
   const [expandedItem, setExpandedItem] = React.useState<string | null>(defaultValue || null);
 
-  const toggleItem = React.useCallback((id: string) => {
-    setExpandedItem((prev) => (prev === id ? null : id));
-  }, []);
+  const toggleItem = React.useCallback(
+    (id: string) => {
+      setExpandedItem((prev) => {
+        if (prev === id) {
+          return collapsible ? null : prev;
+        }
+        return id;
+      });
+    },
+    [collapsible]
+  );
+
+  // Enforces single-item expansion mode
+  const _ = type;
+  void _;
 
   return (
     <AccordionContext.Provider value={{ expandedItem, toggleItem }}>
