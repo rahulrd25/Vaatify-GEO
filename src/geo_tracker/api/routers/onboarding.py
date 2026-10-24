@@ -6,7 +6,7 @@ competitor matrix initialization, and brand account onboarding persistence.
 import uuid
 import datetime
 from typing import List, Optional
-from fastapi import APIRouter, Depends, Query, HTTPException, status
+from fastapi import APIRouter, Depends, Query, HTTPException, status, Request
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -15,7 +15,9 @@ from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.models import BrandProfileModel, CompetitorModel, PromptModel, MonitoringScheduleModel
 from src.geo_tracker.api.utils.email_domain import extract_brand_from_email
 from src.geo_tracker.api.utils.tenant import get_current_user_id
+from src.geo_tracker.api.security.rate_limiter import rate_limiter
 from src.geo_tracker.agent.copilot_service import CopilotAgentService
+from src.geo_tracker.config import is_production
 
 router = APIRouter(prefix="/api/v1/onboarding", tags=["User Onboarding & Brand Setup"])
 
@@ -53,11 +55,25 @@ def parse_work_email(email: str = Query(..., description="User's work email addr
     "/suggest-queries",
     summary="Agent Copilot: Generate Target Buyer Queries for Onboarding"
 )
-def suggest_onboarding_queries(request: SuggestQueriesRequest):
+def suggest_onboarding_queries(request: SuggestQueriesRequest, req: Request):
     """
     Generates 5-6 high-intent buyer search queries tailored to the brand domain and industry.
     Combines Copilot Agent reasoning with tactical heuristic fallback.
+    Protected with IP-level rate limiting to prevent Denial-of-Wallet resource exhaustion.
     """
+    client_ip = req.headers.get("x-forwarded-for")
+    if client_ip:
+        client_ip = client_ip.split(",")[0].strip()
+    else:
+        client_ip = req.client.host if req.client else "unknown"
+
+    rate_limiter.check_rate_limit(
+        client_id=client_ip,
+        action="suggest_queries",
+        max_requests=10,
+        window_seconds=60
+    )
+
     brand_name = request.brand_name.strip()
     brand_domain = request.brand_domain.strip().lower()
     industry = request.industry or "Software & Services"
@@ -145,6 +161,18 @@ def complete_onboarding(
     Saves brand profile, competitors, and target buyer queries strictly for the user account.
     Marks onboarding as completed.
     """
+    if is_production() and not current_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required to complete onboarding in production."
+        )
+
+    if current_user_id and request.user_id and request.user_id != current_user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: Cannot complete onboarding for another user."
+        )
+
     target_user_id = current_user_id or request.user_id
     if not target_user_id:
         raise HTTPException(

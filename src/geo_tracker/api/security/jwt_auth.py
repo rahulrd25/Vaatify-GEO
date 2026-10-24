@@ -177,8 +177,8 @@ def verify_supabase_jwt(token: str) -> Dict[str, Any]:
         return payload
 
     # 4. Fallback if no verification secrets or URLs are available (local development only)
-    is_prod = os.getenv("ENV", "development").lower() == "production"
-    if is_prod:
+    from src.geo_tracker.config import is_production
+    if is_production():
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Server configuration error: Neither SUPABASE_JWT_SECRET nor NEXT_PUBLIC_SUPABASE_URL is configured for token verification.",

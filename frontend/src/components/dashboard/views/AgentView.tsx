@@ -1,4 +1,4 @@
-import AgentCopilot from '@/components/AgentCopilot';
+import AgentCopilot from '../AgentCopilot';
 import { PromptItem, BrandProfile, OverviewMetrics } from '@/types';
 
 interface AgentViewProps {

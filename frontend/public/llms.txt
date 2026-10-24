@@ -1,0 +1,32 @@
+# Vaatify GEO
+
+> Vaatify GEO is an enterprise Generative Engine Optimization (GEO) SaaS platform that tracks brand visibility, citation placement, and competitor Share of Voice across AI search engines.
+
+## Overview
+
+Vaatify GEO continuously audits live generative search platforms—including ChatGPT Search, Perplexity Sonar, Google AI Overviews, and Claude—to measure where brands appear in AI-generated answers, which sources are cited, and when rankings shift.
+
+Unlike traditional search engine optimization tools that evaluate static HTML link results, Vaatify GEO simulates real user evaluation queries, reads generated synthesized answers, extracts cited source anchors, and benchmarks recommendations against competitors.
+
+## Core Capabilities
+
+- **Real-Time AI Search Monitoring**: Executes live search scans across major generative engines (OpenAI, Perplexity, Google Gemini, Anthropic Claude), parsing answer text, verifying cited hyperlinks, and tracking exact recommendation rank.
+- **Competitor Share of Voice (SoV) Matrix**: Measures brand visibility percentages across commercial buyer questions, calculating recommendation frequency, sentiment polarity, and competitor displacement.
+- **Automated Brand Audits & Drift Alerts**: Runs scheduled daily or weekly background evaluation scans and delivers immediate alerts when algorithm updates or competitor content replace your brand citations.
+- **Citation Intelligence & Diagnostics**: Identifies which authoritative industry domains, review aggregators, and documentation pages LLMs reference when answering category questions.
+
+## Primary Links
+
+- [Platform Overview](https://geo.vaatify.com): Main product capabilities, workflow explanations, and onboarding.
+- [Pricing](https://geo.vaatify.com/pricing): Subscription tiers (Starter at $49/mo, Pro at $149/mo, and Enterprise custom setup), feature comparisons, and commercial FAQs.
+- [Documentation & API Reference](https://geo.vaatify.com/docs): Quickstart integration guide, REST API endpoints, evaluation parameters, and query taxonomy configuration.
+- [GEO Research & Blog](https://geo.vaatify.com/blog): In-depth research papers, citation ranking guides, and Generative Engine Optimization best practices.
+- [Create Account](https://geo.vaatify.com/signup): Self-serve free trial onboarding and workspace configuration.
+- [Sign In](https://geo.vaatify.com/login): Customer workspace authentication.
+
+## Technical Details
+
+- **Protocol**: REST API over HTTPS with Bearer JWT and API Key authentication.
+- **Base URL**: `https://geo.vaatify.com`
+- **Engine Coverage**: OpenAI ChatGPT Search, Perplexity Sonar, Google Gemini & AI Overviews, Anthropic Claude.
+- **Evaluation Cadence**: Real-time on-demand triggers and automated scheduled cron evaluations.

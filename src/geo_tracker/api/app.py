@@ -43,7 +43,7 @@ def custom_openapi(app: FastAPI):
             "type": "apiKey",
             "in": "header",
             "name": security_settings.api_key_name,
-            "description": f"Enter your API key (e.g. `{security_settings.api_key}`)"
+            "description": "Enter your Vaatify GEO API key (e.g. 'geo_live_...')."
         }
     }
     app.openapi_schema = openapi_schema

@@ -26,11 +26,26 @@ router = APIRouter(prefix="/api/v1/agent", tags=["Agent Copilot"])
     summary="List Strategic GEO Recommendations",
     dependencies=[Depends(verify_api_key)]
 )
-def list_recommendations(session: Session = Depends(get_db_session)):
+def list_recommendations(
+    user_id: Optional[str] = Depends(get_current_user_id),
+    session: Session = Depends(get_db_session)
+):
     """Returns AI-generated recommendations to close content gaps and increase citation likelihood."""
-    recs = session.query(AgentRecommendationModel).order_by(AgentRecommendationModel.created_at.desc()).all()
+    query = session.query(AgentRecommendationModel).outerjoin(PromptModel, AgentRecommendationModel.prompt_id == PromptModel.id)
+    if user_id:
+        brand_profile_model = get_user_brand(session, user_id)
+        brand_id = brand_profile_model.id if brand_profile_model else None
+
+        # Filter out other users' prompt recommendations; allow general recs or tenant's own recs
+        query = query.filter(
+            (AgentRecommendationModel.prompt_id.is_(None)) |
+            (PromptModel.user_id == user_id) |
+            (PromptModel.brand_id == brand_id if brand_id else False)
+        )
+
+    recs = query.order_by(AgentRecommendationModel.created_at.desc()).all()
     if not recs:
-        # Seed initial proactive recommendations if table is empty
+        # Seed initial proactive recommendations if none exist
         default_recs = [
             AgentRecommendationModel(
                 recommendation_type="citation_builder",

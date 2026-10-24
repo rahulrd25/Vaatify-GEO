@@ -1,31 +1,58 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import Sidebar, { NavTab } from '@/components/Sidebar';
-import AgentView from '@/components/views/AgentView';
-import OverviewView from '@/components/views/OverviewView';
-import QueriesView from '@/components/views/QueriesView';
-import ExplorerView from '@/components/views/ExplorerView';
-import DriftView from '@/components/views/DriftView';
-import SettingsView from '@/components/views/SettingsView';
-import UserSettingsView from '@/components/views/UserSettingsView';
-import AuthView from '@/components/auth/AuthView';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  Sidebar,
+  type NavTab,
+  AgentView,
+  OverviewView,
+  QueriesView,
+  ExplorerView,
+  DriftView,
+  SettingsView,
+  UserSettingsView,
+} from '@/components/dashboard';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { PromptItem, BrandProfile, RunItem, OverviewMetrics } from '@/types';
 import { apiUrl } from '@/lib/api';
 import { Loader2, Sparkles, ArrowRight, X } from 'lucide-react';
 
-export default function Home() {
+const VALID_TABS: NavTab[] = [
+  'agent',
+  'overview',
+  'queries',
+  'explorer',
+  'drift',
+  'settings',
+  'user_settings',
+];
+
+export default function DashboardPage() {
   return (
-    <AuthProvider>
-      <AppShell />
-    </AuthProvider>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+          <Loader2 className="h-8 w-8 text-[#FE4D03] animate-spin mb-3" />
+          <p className="text-xs text-slate-500 font-medium">Loading your brand workspace...</p>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }
 
-function AppShell() {
+function DashboardContent() {
+  const router = useRouter();
   const { user, isLoading: isAuthLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthLoading && !user) {
+      router.replace('/login');
+    }
+  }, [user, isAuthLoading, router]);
 
   if (isAuthLoading) {
     return (
@@ -37,21 +64,59 @@ function AppShell() {
   }
 
   if (!user) {
-    return <AuthView />;
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 text-[#FE4D03] animate-spin mb-3" />
+        <p className="text-xs text-slate-500 font-medium">Redirecting to sign in...</p>
+      </div>
+    );
   }
 
   return <MainDashboard />;
 }
 
 function MainDashboard() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, sessionToken, onboardingCompleted, setOnboardingCompleted, logout } = useAuth();
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(!onboardingCompleted);
   const [isBannerDismissed, setIsBannerDismissed] = useState(false);
 
   const [apiKey] = useState(
-    process.env.NEXT_PUBLIC_GEO_API_KEY || 'geo_DgroTYxwQp7dl5prrTMzjITh_Imt-BlsTbIp-TuBpPA'
+    process.env.NEXT_PUBLIC_GEO_API_KEY || ''
   );
-  const [currentTab, setCurrentTab] = useState<NavTab>('agent');
+
+  const initialTabParam = searchParams.get('tab') as NavTab | null;
+  const [currentTab, setCurrentTabState] = useState<NavTab>(() => {
+    if (initialTabParam && VALID_TABS.includes(initialTabParam)) {
+      return initialTabParam;
+    }
+    return 'agent';
+  });
+
+  const setCurrentTab = useCallback((tab: NavTab) => {
+    setCurrentTabState(tab);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', tab);
+      window.history.pushState({}, '', url.toString());
+    }
+  }, []);
+
+  // Listen for browser back / forward navigation to switch active tab
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab') as NavTab | null;
+      if (tab && VALID_TABS.includes(tab)) {
+        setCurrentTabState(tab);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const brandDisplayName = user?.detectedBrand?.name || 'My Brand';
@@ -78,7 +143,7 @@ function MainDashboard() {
 
   const fetchBackendData = useCallback(async () => {
     const headers: Record<string, string> = {
-      'X-API-Key': apiKey,
+      ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       ...(sessionToken ? { 'Authorization': `Bearer ${sessionToken}` } : {}),
       ...(user?.id ? { 'X-User-Id': user.id } : {})
     };
@@ -148,7 +213,8 @@ function MainDashboard() {
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
+        ...(sessionToken ? { 'Authorization': `Bearer ${sessionToken}` } : {}),
         ...(user?.id ? { 'X-User-Id': user.id } : {})
       };
       const res = await fetch(apiUrl('/api/v1/pipeline/run'), {
@@ -161,7 +227,10 @@ function MainDashboard() {
           await fetchBackendData();
           try {
             const statusRes = await fetch(apiUrl('/api/v1/pipeline/status'), {
-              headers: { 'X-API-Key': apiKey }
+              headers: {
+                ...(apiKey ? { 'X-API-Key': apiKey } : {}),
+                ...(sessionToken ? { 'Authorization': `Bearer ${sessionToken}` } : {}),
+              }
             });
             if (statusRes.ok) {
               const statusData = await statusRes.json();
@@ -307,7 +376,10 @@ function MainDashboard() {
               user={user}
               brandName={brandProfile.brand.name}
               brandDomain={brandProfile.brand.domain}
-              onSignOut={logout}
+              onSignOut={async () => {
+                await logout();
+                router.replace('/');
+              }}
             />
           </div>
         </main>

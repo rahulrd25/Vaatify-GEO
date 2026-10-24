@@ -68,3 +68,12 @@ def load_prompts_config(file_path: str | Path = "config/prompts.yaml") -> Prompt
     with open(path, "r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
     return PromptsFileConfig.model_validate(data)
+
+def is_production() -> bool:
+    """
+    Evaluates whether the application is running in a production environment.
+    Supports both standard ENVIRONMENT and ENV variables.
+    """
+    env_val = os.getenv("ENVIRONMENT") or os.getenv("ENV") or "development"
+    return env_val.strip().lower() in ("production", "prod")
+
