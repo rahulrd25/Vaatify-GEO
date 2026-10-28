@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.api_key import verify_api_or_user_auth
 from src.geo_tracker.api.security.rate_limiter import rate_limiter
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.models import MonitoringScheduleModel
@@ -42,7 +42,7 @@ class ScheduleResponse(BaseModel):
     "",
     response_model=ScheduleResponse,
     summary="Get Active Monitoring Schedule",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def get_monitoring_schedule(
     user_id: Optional[str] = Depends(get_current_user_id),
@@ -97,7 +97,7 @@ def get_monitoring_schedule(
     "",
     response_model=ScheduleResponse,
     summary="Update Monitoring Schedule Cadence",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def update_monitoring_schedule(
     request: ScheduleUpdateRequest,
@@ -172,14 +172,14 @@ def update_monitoring_schedule(
 @router.post(
     "/trigger",
     summary="Manually Trigger Scheduled Evaluation Immediately",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 async def trigger_schedule_evaluation(
     user_id: Optional[str] = Depends(get_current_user_id),
-    api_key: str = Depends(verify_api_key)
 ):
     """Triggers an immediate background evaluation run via the scheduler queue with rate limiting."""
-    rate_limiter.check_rate_limit(client_id=api_key, action="schedule_trigger", max_requests=5, window_seconds=900)
+    client_id = user_id or "schedule_trigger_user"
+    rate_limiter.check_rate_limit(client_id=client_id, action="schedule_trigger", max_requests=5, window_seconds=900)
 
     from src.geo_tracker.scheduler.engine import global_scheduler
     from src.geo_tracker.storage.session import create_session_factory

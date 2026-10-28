@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.api_key import verify_api_or_user_auth
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.repository import Repository
 from src.geo_tracker.storage.models import PromptModel
@@ -32,7 +32,7 @@ class PromptResponse(BaseModel):
     "",
     response_model=List[PromptResponse],
     summary="List Tracked Prompts",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def list_prompts(
     user_id: Optional[str] = Depends(get_current_user_id),
@@ -64,7 +64,7 @@ def list_prompts(
     response_model=PromptResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Add New Tracked Prompt",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def add_prompt(
     request: CreatePromptRequest,
@@ -101,7 +101,7 @@ def add_prompt(
 @router.delete(
     "/{prompt_id}",
     summary="Deactivate Tracked Prompt",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def delete_prompt(
     prompt_id: str,

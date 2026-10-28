@@ -7,7 +7,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.api_key import verify_api_or_user_auth
 from src.geo_tracker.api.security.rate_limiter import rate_limiter
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.repository import Repository
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/api/v1/agent", tags=["Agent Copilot"])
 @router.get(
     "/recommendations",
     summary="List Strategic GEO Recommendations",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def list_recommendations(
     user_id: Optional[str] = Depends(get_current_user_id),
@@ -85,16 +85,16 @@ def list_recommendations(
 @router.post(
     "/chat",
     summary="Agent Copilot Chat & Structured Reasoning",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def agent_chat(
     request: dict,
     user_id: Optional[str] = Depends(get_current_user_id),
-    api_key: str = Depends(verify_api_key),
     session: Session = Depends(get_db_session)
 ):
     """Executes conversational Copilot reasoning with prompt injection guardrails and rate limiting."""
-    rate_limiter.check_rate_limit(client_id=api_key, action="agent_chat", max_requests=30, window_seconds=60)
+    client_id = user_id or "copilot_user"
+    rate_limiter.check_rate_limit(client_id=client_id, action="agent_chat", max_requests=30, window_seconds=60)
 
     # Fetch live context from database strictly for tenant
     brand_profile_model = get_user_brand(session, user_id)
