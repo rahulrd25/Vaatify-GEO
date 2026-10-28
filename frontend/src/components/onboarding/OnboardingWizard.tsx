@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import { BrandLogo } from '@/components/common/BrandLogo';
 import { useAuth } from '@/context/AuthContext';
 import { apiUrl } from '@/lib/api';
 import {
@@ -182,20 +182,18 @@ export default function OnboardingWizard({ onClose, onComplete }: OnboardingWiza
   const isModal = Boolean(onClose);
 
   const innerContent = (
-    <div className={`w-full max-w-2xl bg-white ${isModal ? 'rounded-xl shadow-2xl border border-slate-200 overflow-hidden my-auto' : 'p-6 sm:p-8 rounded-lg shadow-sm border border-slate-200'}`}>
+    <div className={`w-full max-w-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 ${isModal ? 'rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto' : 'p-6 sm:p-8 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800'}`}>
       {/* Top Header if Modal */}
       {isModal && (
-        <div className="flex items-center justify-between px-6 py-3.5 bg-slate-50 border-b border-slate-200">
+        <div className="flex items-center justify-between px-6 py-3.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <Image
-              src="/logo.svg"
-              alt="Vaatify GEO"
+            <BrandLogo
               width={120}
               height={30}
               priority
               className="h-6 w-auto object-contain"
             />
-            <span className="text-[11px] font-semibold text-slate-500 border-l border-slate-300 pl-2">
+            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 border-l border-slate-300 dark:border-slate-700 pl-2">
               Brand Onboarding
             </span>
           </div>
@@ -203,7 +201,7 @@ export default function OnboardingWizard({ onClose, onComplete }: OnboardingWiza
             <button
               type="button"
               onClick={onClose}
-              className="text-xs text-slate-500 hover:text-slate-800 font-medium cursor-pointer transition-colors"
+              className="text-xs text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white font-medium cursor-pointer transition-colors"
             >
               Explore workspace first →
             </button>
@@ -599,9 +597,7 @@ export default function OnboardingWizard({ onClose, onComplete }: OnboardingWiza
         </div>
 
         <div className="flex justify-center mb-5">
-          <Image
-            src="/logo.svg"
-            alt="Vaatify GEO"
+          <BrandLogo
             width={160}
             height={40}
             priority

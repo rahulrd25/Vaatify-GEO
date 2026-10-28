@@ -253,18 +253,18 @@ export default function SettingsView({
   return (
     <div className="space-y-4 max-w-6xl">
       {/* Compact Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
             <Building2 className="h-4 w-4 text-orange-600" />
             Brand Profile & Competitor Matrix
           </h2>
-          <p className="text-[11px] text-slate-500">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
             Manage target domains and automated background evaluation schedules.
           </p>
         </div>
         {(successMsg || scheduleMsg) && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-700 font-medium self-start">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded text-xs text-emerald-700 dark:text-emerald-400 font-medium self-start">
             <Check className="h-3.5 w-3.5" />
             <span>{successMsg || scheduleMsg}</span>
           </div>
@@ -278,16 +278,16 @@ export default function SettingsView({
           {/* Primary Brand Identity Card */}
           <div className="card-white rounded-lg p-4 shadow-xs">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                 <Globe className="h-3.5 w-3.5 text-orange-600" />
                 Primary Brand
               </h3>
-              <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Target Domain</span>
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Target Domain</span>
             </div>
 
             <form onSubmit={handleSaveProfile} className="space-y-3">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Brand Name
                 </label>
                 <input
@@ -299,12 +299,12 @@ export default function SettingsView({
                       brand: { ...brandProfile.brand, name: e.target.value },
                     })
                   }
-                  className="w-full px-2.5 py-1.5 rounded bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-orange-500 focus:bg-white font-medium"
+                  className="w-full px-2.5 py-1.5 rounded bg-slate-50 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:border-orange-500 focus:bg-white dark:focus:bg-slate-950 font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-700 mb-1">
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Website Domain
                 </label>
                 <input
@@ -317,7 +317,7 @@ export default function SettingsView({
                     })
                   }
                   placeholder="e.g. acme.com"
-                  className="w-full px-2.5 py-1.5 rounded bg-slate-50 border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-orange-500 focus:bg-white font-mono"
+                  className="w-full px-2.5 py-1.5 rounded bg-slate-50 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:border-orange-500 focus:bg-white dark:focus:bg-slate-950 font-mono"
                 />
               </div>
 
@@ -343,21 +343,21 @@ export default function SettingsView({
           {/* Automated Monitoring Schedule Card */}
           <div className="card-white rounded-lg p-4 shadow-xs">
             <div className="flex items-center justify-between mb-1">
-              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5 text-emerald-600" />
                 Audit Cadence & Timing
               </h3>
               {schedule && (
                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                   schedule.frequency === 'off'
-                    ? 'bg-slate-100 text-slate-600'
-                    : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+                    : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
                 }`}>
                   {schedule.frequency === 'off' ? 'Manual Only' : `${schedule.frequency} Active`}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-slate-500 mb-3">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
               Select when background evaluations automatically run on AI engines.
             </p>
 
@@ -370,17 +370,17 @@ export default function SettingsView({
                 onClick={() => handleUpdateSchedule('weekly')}
                 className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   schedule?.frequency === 'weekly'
-                    ? 'border-emerald-500 bg-emerald-50/50 ring-1 ring-emerald-500/20 shadow-xs'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 dark:border-emerald-500/50 ring-1 ring-emerald-500/20 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">Weekly</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">Weekly</span>
                   {updatingFreq === 'weekly' && (
                     <Loader2 className="h-3 w-3 animate-spin text-emerald-600" />
                   )}
                 </div>
-                <div className="text-[10px] text-slate-500 font-medium mt-0.5">Mon @ 9 AM UTC</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">Mon @ 9 AM UTC</div>
               </button>
 
               {/* Daily */}
@@ -390,17 +390,17 @@ export default function SettingsView({
                 onClick={() => handleUpdateSchedule('daily')}
                 className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   schedule?.frequency === 'daily'
-                    ? 'border-emerald-500 bg-emerald-50/50 ring-1 ring-emerald-500/20 shadow-xs'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30 dark:border-emerald-500/50 ring-1 ring-emerald-500/20 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">Daily</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">Daily</span>
                   {updatingFreq === 'daily' && (
                     <Loader2 className="h-3 w-3 animate-spin text-emerald-600" />
                   )}
                 </div>
-                <div className="text-[10px] text-slate-500 font-medium mt-0.5">Daily @ 9 AM UTC</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">Daily @ 9 AM UTC</div>
               </button>
 
               {/* Manual */}
@@ -410,24 +410,24 @@ export default function SettingsView({
                 onClick={() => handleUpdateSchedule('off')}
                 className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
                   schedule?.frequency === 'off'
-                    ? 'border-slate-400 bg-slate-100 ring-1 ring-slate-400/20 shadow-xs'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-slate-400 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-400/20 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300 dark:hover:border-slate-700'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">Manual</span>
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">Manual</span>
                   {updatingFreq === 'off' && (
                     <Loader2 className="h-3 w-3 animate-spin text-slate-600" />
                   )}
                 </div>
-                <div className="text-[10px] text-slate-500 font-medium mt-0.5">On-demand</div>
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">On-demand</div>
               </button>
             </div>
 
             {/* Schedule Status & Timing Details */}
-            <div className="space-y-2 p-2.5 bg-slate-50 border border-slate-200 rounded-md">
-              <div className="text-[11px] text-slate-700 font-medium flex items-start gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-slate-500 mt-0.5 shrink-0" />
+            <div className="space-y-2 p-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-md">
+              <div className="text-[11px] text-slate-700 dark:text-slate-300 font-medium flex items-start gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400 mt-0.5 shrink-0" />
                 <div>
                   {schedule?.frequency === 'weekly' && (
                     <span><strong>Active Schedule:</strong> Every Monday at 09:00 UTC</span>
@@ -436,10 +436,10 @@ export default function SettingsView({
                     <span><strong>Active Schedule:</strong> Every day at 09:00 UTC</span>
                   )}
                   {schedule?.frequency === 'off' && (
-                    <span className="text-slate-500 italic">Automated audits disabled (manual trigger only)</span>
+                    <span className="text-slate-500 dark:text-slate-400 italic">Automated audits disabled (manual trigger only)</span>
                   )}
                   {schedule?.frequency !== 'off' && schedule?.next_run_at && (
-                    <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
                       Next run: {new Date(schedule.next_run_at).toUTCString()}
                     </div>
                   )}
@@ -447,12 +447,12 @@ export default function SettingsView({
               </div>
 
               {schedule?.last_run_at && (
-                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1.5 border-t border-slate-200">
+                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-1.5 border-t border-slate-200 dark:border-slate-800">
                   <span className="flex items-center gap-1">
                     <ShieldCheck className="h-3 w-3 text-emerald-600" />
                     Last audit: {new Date(schedule.last_run_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <span className="text-emerald-700 font-semibold uppercase">
+                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold uppercase">
                     {schedule.last_run_status || 'Success'}
                   </span>
                 </div>
@@ -462,7 +462,7 @@ export default function SettingsView({
                 type="button"
                 onClick={handleTriggerNow}
                 disabled={isTriggering}
-                className="w-full mt-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
+                className="w-full mt-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {isTriggering ? (
                   <>
@@ -486,40 +486,40 @@ export default function SettingsView({
           <div className="card-white rounded-lg p-4 shadow-xs flex flex-col h-full">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-1.5">
-                <Users className="h-3.5 w-3.5 text-slate-700" />
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                <Users className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />
+                <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                   Benchmark Competitors
                 </h3>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold">
+              <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-bold">
                 {brandProfile.competitors.length} tracked
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 mb-3">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-3">
               AI engines evaluated against these competitor domains when generating answers.
             </p>
 
             {/* Quick Add Inline Form */}
-            <div className="flex items-center gap-2 mb-3 p-2 bg-slate-50 border border-slate-200 rounded-md">
+            <div className="flex items-center gap-2 mb-3 p-2 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-md">
               <input
                 type="text"
                 value={newCompName}
                 onChange={(e) => setNewCompName(e.target.value)}
                 placeholder="Name (e.g. Peec)"
-                className="w-1/2 px-2.5 py-1.5 rounded bg-white border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-orange-500"
+                className="w-1/2 px-2.5 py-1.5 rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:border-orange-500"
               />
               <input
                 type="text"
                 value={newCompDomain}
                 onChange={(e) => setNewCompDomain(e.target.value)}
                 placeholder="Domain (e.g. peec.ai)"
-                className="w-1/2 px-2.5 py-1.5 rounded bg-white border border-slate-300 text-slate-900 text-xs focus:outline-none focus:border-orange-500 font-mono"
+                className="w-1/2 px-2.5 py-1.5 rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:border-orange-500 font-mono"
               />
               <button
                 type="button"
                 onClick={handleAddCompetitor}
                 disabled={isAddingComp || !newCompName.trim() || !newCompDomain.trim()}
-                className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold cursor-pointer shrink-0 disabled:opacity-50"
+                className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 text-white text-xs font-semibold cursor-pointer shrink-0 disabled:opacity-50"
               >
                 {isAddingComp ? (
                   <>
@@ -536,28 +536,28 @@ export default function SettingsView({
             </div>
 
             {/* Competitors List */}
-            <div className="overflow-y-auto max-h-[320px] rounded border border-slate-200 divide-y divide-slate-100">
+            <div className="overflow-y-auto max-h-[320px] rounded border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800/60">
               {brandProfile.competitors.length === 0 ? (
-                <div className="py-6 text-center text-slate-500 text-xs">
+                <div className="py-6 text-center text-slate-500 dark:text-slate-400 text-xs">
                   No competitors added yet. Use the form above to benchmark competitors.
                 </div>
               ) : (
                 brandProfile.competitors.map((comp, idx) => (
-                  <div key={idx} className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 transition-colors">
+                  <div key={idx} className="flex items-center justify-between px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="h-6 w-6 rounded bg-slate-100 text-slate-700 flex items-center justify-center text-[10px] font-bold shrink-0">
+                      <div className="h-6 w-6 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-[10px] font-bold shrink-0">
                         {comp.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="truncate">
-                        <div className="text-xs font-semibold text-slate-900 truncate">{comp.name}</div>
-                        <div className="text-[10px] text-slate-500 font-mono truncate">{comp.domain}</div>
+                        <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">{comp.name}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono truncate">{comp.domain}</div>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleRemoveCompetitor(idx)}
                       disabled={removingCompIndex === idx}
-                      className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                      className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                       title="Remove competitor"
                     >
                       {removingCompIndex === idx ? (
@@ -572,8 +572,8 @@ export default function SettingsView({
             </div>
 
             {/* Save Competitors Footer */}
-            <div className="flex items-center justify-between pt-3 mt-auto border-t border-slate-100">
-              <span className="text-[11px] text-slate-500">
+            <div className="flex items-center justify-between pt-3 mt-auto border-t border-slate-100 dark:border-slate-800">
+              <span className="text-[11px] text-slate-500 dark:text-slate-400">
                 Remember to save after adding or removing competitors.
               </span>
               <button

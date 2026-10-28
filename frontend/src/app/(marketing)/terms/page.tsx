@@ -20,35 +20,35 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="py-16 md:py-24 bg-white text-slate-900">
+    <div className="py-16 md:py-24 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200/60 text-[#FE4D03] text-xs font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-950/40 border border-orange-200/60 dark:border-orange-800/60 text-[#FE4D03] text-xs font-medium mb-4">
             <Scale className="h-3.5 w-3.5" />
             <span>Legal Agreement</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
             Terms of Service
           </h1>
-          <p className="mt-3 text-sm sm:text-base text-slate-500 font-subheading">
+          <p className="mt-3 text-sm sm:text-base text-slate-500 dark:text-slate-400 font-subheading">
             Last updated: October 2026 &middot; Effective immediately for all users and subscribers
           </p>
         </div>
 
         {/* Official Company Registry Banner */}
-        <div className="mb-12 p-6 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
+        <div className="mb-12 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-600 font-mono">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 font-mono">
               <Building2 className="h-4 w-4 text-[#FE4D03]" />
               <span>Operating Legal Entity</span>
             </div>
-            <p className="text-base font-bold text-slate-950">
+            <p className="text-base font-bold text-slate-950 dark:text-white">
               DECCAN ADAPTIVE INTELLIGENCE LIMITED
             </p>
-            <p className="text-xs text-slate-600">
-              Private Limited Company &middot; Registered in the United Kingdom &middot; Company Number: <strong className="text-slate-900 font-semibold">16694122</strong>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Private Limited Company &middot; Registered in the United Kingdom &middot; Company Number: <strong className="text-slate-900 dark:text-white font-semibold">16694122</strong>
             </p>
           </div>
 
@@ -64,10 +64,10 @@ export default function TermsPage() {
         </div>
 
         {/* Terms Content Body */}
-        <div className="space-y-10 text-sm sm:text-base text-slate-700 leading-relaxed font-subheading">
+        <div className="space-y-10 text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-subheading">
           {/* Section 1 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               1. Introduction &amp; Acceptance of Terms
             </h2>
             <p>
@@ -76,20 +76,20 @@ export default function TermsPage() {
             <p>
               These Terms govern your access to and use of <strong>Vaatify GEO</strong>, including our web applications, APIs, analytics dashboards, citation trackers, alerting systems, and documentation available at <strong>vaatify.com</strong> and associated subdomains (collectively, the &quot;Service&quot;).
             </p>
-            <p className="font-medium text-slate-900">
+            <p className="font-medium text-slate-900 dark:text-white">
               By registering an account, clicking &quot;Register My Brand&quot;, signing in, or accessing the Service, you confirm that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree with these Terms, you must immediately cease all use of the Service.
             </p>
           </section>
 
           {/* Section 2 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               2. Description of the Vaatify GEO Service
             </h2>
             <p>
               Vaatify GEO provides a Generative Engine Optimization (GEO) and AI search visibility intelligence platform. The Service programmatically analyzes generative AI search engines and foundation model answers (including but not limited to OpenAI ChatGPT Search, Google Gemini &amp; AI Overviews, Perplexity Sonar, and Anthropic Claude) to:
             </p>
-            <ul className="list-disc pl-6 space-y-1.5 text-slate-600">
+            <ul className="list-disc pl-6 space-y-1.5 text-slate-600 dark:text-slate-300">
               <li>Track where and how your registered brand is cited, referenced, or recommended in AI search results;</li>
               <li>Monitor competitor share of voice, citation positions, and recommendation sentiment;</li>
               <li>Deliver automated notifications and reporting when AI engine rankings or citation source links change;</li>
@@ -99,7 +99,7 @@ export default function TermsPage() {
 
           {/* Section 3 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               3. Account Registration &amp; Corporate Authority
             </h2>
             <p>
@@ -112,7 +112,7 @@ export default function TermsPage() {
 
           {/* Section 4 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               4. Subscriptions, Fees &amp; Billing
             </h2>
             <div className="space-y-2">
@@ -133,7 +133,7 @@ export default function TermsPage() {
 
           {/* Section 5 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               5. Intellectual Property &amp; Data Ownership
             </h2>
             <div className="space-y-2">
@@ -151,11 +151,11 @@ export default function TermsPage() {
 
           {/* Section 6 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               6. Acceptable Use Policy &amp; Prohibitions
             </h2>
             <p>You agree that you will not:</p>
-            <ul className="list-disc pl-6 space-y-1.5 text-slate-600">
+            <ul className="list-disc pl-6 space-y-1.5 text-slate-600 dark:text-slate-300">
               <li>Reverse engineer, decompile, or attempt to extract the source code or proprietary DOM-extraction logic of the Service;</li>
               <li>Circumvent subscription plan rate limits, query quotas, or authentication controls;</li>
               <li>Use the Service to transmit malicious software, automated exploits, or unlawful content;</li>
@@ -166,13 +166,13 @@ export default function TermsPage() {
 
           {/* Section 7 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               7. Third-Party AI Engine Disclaimers
             </h2>
             <p>
               Vaatify GEO inspects and captures live answers generated by third-party AI platforms (such as OpenAI, Alphabet/Google, Anthropic, and Perplexity). You acknowledge and agree that:
             </p>
-            <ul className="list-disc pl-6 space-y-1.5 text-slate-600">
+            <ul className="list-disc pl-6 space-y-1.5 text-slate-600 dark:text-slate-300">
               <li>Third-party AI platforms operate independently and may alter their algorithms, citation policies, or user interfaces without prior notice;</li>
               <li>Citation metrics and ranking positions represent deterministic observations of live AI SERPs at the specific timestamp of execution;</li>
               <li>The Company does not control, endorse, or accept liability for the factual accuracy or content of generative responses produced by third-party AI models.</li>
@@ -181,23 +181,23 @@ export default function TermsPage() {
 
           {/* Section 8 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               8. Limitation of Liability
             </h2>
             <p>
               To the maximum extent permitted by applicable law in England and Wales:
             </p>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-slate-400">
               In no event shall <strong>DECCAN ADAPTIVE INTELLIGENCE LIMITED</strong>, its directors, officers, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, revenue, data, business goodwill, or commercial opportunities arising out of or related to your use of or inability to use the Service.
             </p>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-slate-400">
               Our total aggregate liability for all claims arising under or in connection with these Terms or the Service shall not exceed the total amount paid by you to the Company in the twelve (12) months immediately preceding the event giving rise to liability.
             </p>
           </section>
 
           {/* Section 9 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               9. Termination &amp; Suspension
             </h2>
             <p>
@@ -210,7 +210,7 @@ export default function TermsPage() {
 
           {/* Section 10 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               10. Governing Law &amp; Jurisdiction
             </h2>
             <p>
@@ -223,13 +223,13 @@ export default function TermsPage() {
 
           {/* Section 11 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               11. Company Details &amp; Legal Notices
             </h2>
             <p>
               For legal inquiries, formal notices, or questions regarding these Terms, please contact us at:
             </p>
-            <div className="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs sm:text-sm">
+            <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 space-y-2 text-xs sm:text-sm">
               <p>
                 <strong>Company Name:</strong> DECCAN ADAPTIVE INTELLIGENCE LIMITED
               </p>
