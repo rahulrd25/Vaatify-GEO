@@ -6,7 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.api_key import verify_api_or_user_auth
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.models import BrandProfileModel, CompetitorModel, PromptModel
 from src.geo_tracker.config import BrandConfig, CompetitorConfig
@@ -22,7 +22,7 @@ class ProfileUpdateRequest(BaseModel):
 @router.get(
     "",
     summary="Get Active Brand Profile & Competitors",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def get_brand_profile(
     user_id: Optional[str] = Depends(get_current_user_id),
@@ -53,7 +53,7 @@ def get_brand_profile(
 @router.put(
     "",
     summary="Update Brand Profile & Competitors",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def update_brand_profile(
     request: ProfileUpdateRequest,

@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.api_key import verify_api_or_user_auth
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.storage.repository import Repository
 from src.geo_tracker.storage.models import BrandProfileModel, PromptModel, RunModel, DriftAlertModel
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api/v1", tags=["Analytics & Metrics"])
 @router.get(
     "/metrics/overview",
     summary="Get Share of Voice & Citation Metrics",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def get_metrics_overview(
     user_id: Optional[str] = Depends(get_current_user_id),
@@ -109,7 +109,7 @@ def get_metrics_overview(
 @router.get(
     "/runs",
     summary="List Citation Runs with Pagination & Engine Filters",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def list_runs(
     limit: int = Query(50, ge=1, le=200),
@@ -156,7 +156,7 @@ def list_runs(
 @router.get(
     "/alerts",
     summary="List Drift Alerts",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def list_alerts(
     status_filter: Optional[str] = Query(None, alias="status"),

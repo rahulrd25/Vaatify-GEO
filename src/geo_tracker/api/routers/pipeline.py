@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 
-from src.geo_tracker.api.security.api_key import verify_api_key
+from src.geo_tracker.api.security.api_key import verify_api_or_user_auth
 from src.geo_tracker.api.security.rate_limiter import rate_limiter
 from src.geo_tracker.storage.session import get_db_session, create_session_factory
 from src.geo_tracker.runner import run_pipeline
@@ -54,7 +54,7 @@ def run_pipeline_task(mode: str = "hybrid", user_id: Optional[str] = None):
 @router.get(
     "/status",
     summary="Get Pipeline Execution Status",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def get_pipeline_status():
     """Returns the current execution state, timestamp, and results of background pipeline runs."""
@@ -63,17 +63,17 @@ def get_pipeline_status():
 @router.post(
     "/run",
     summary="Trigger Pipeline Evaluation Run",
-    dependencies=[Depends(verify_api_key)]
+    dependencies=[Depends(verify_api_or_user_auth)]
 )
 def trigger_pipeline_run(
     background_tasks: BackgroundTasks,
     mode: str = "hybrid",
     user_id: Optional[str] = Depends(get_current_user_id),
-    api_key: str = Depends(verify_api_key),
     session: Session = Depends(get_db_session)
 ):
     """Triggers an evaluation pipeline in the background with sliding-window rate limiting."""
-    rate_limiter.check_rate_limit(client_id=api_key, action="pipeline_run", max_requests=5, window_seconds=900)
+    client_id = user_id or "pipeline_runner"
+    rate_limiter.check_rate_limit(client_id=client_id, action="pipeline_run", max_requests=5, window_seconds=900)
 
     background_tasks.add_task(run_pipeline_task, mode=mode, user_id=user_id)
     return {

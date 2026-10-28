@@ -247,7 +247,7 @@ export default function AgentCopilot({
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;
@@ -427,7 +427,9 @@ export default function AgentCopilot({
         let topCompetitorsList: [string, number][] = [];
 
         try {
-          const authHeaders: Record<string, string> = { 'X-API-Key': apiKey };
+          const authHeaders: Record<string, string> = {
+            ...(apiKey ? { 'X-API-Key': apiKey } : {}),
+          };
           if (sessionToken) authHeaders['Authorization'] = `Bearer ${sessionToken}`;
           if (userId) authHeaders['X-User-Id'] = userId;
 
@@ -532,7 +534,7 @@ export default function AgentCopilot({
 
       const chatHeaders: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) chatHeaders['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) chatHeaders['X-User-Id'] = userId;

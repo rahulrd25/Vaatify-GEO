@@ -260,9 +260,9 @@ export default function UserSettingsView({
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
             <span className="flex items-center gap-1 text-slate-600">
               <Shield className="h-3.5 w-3.5 text-emerald-600" />
-              Cryptographic JWT Session Active
+              Secure Session Active
             </span>
-            <span className="font-mono text-[10px] text-slate-400">RS256 Verified</span>
+            <span className="font-mono text-[10px] text-slate-400">Encrypted</span>
           </div>
         </div>
       </div>

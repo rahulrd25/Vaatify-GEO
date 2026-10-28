@@ -99,3 +99,65 @@ def test_metrics_overview_endpoint():
     assert "overall_share_of_voice" in data
     assert "total_evaluations" in data
     assert "active_prompts_count" in data
+
+
+def test_dual_auth_allows_dev_user_without_api_key(monkeypatch):
+    """Verifies that in non-production, a user session/ID without an API key is authorized."""
+    monkeypatch.setenv("ENV", "development")
+    res = client.get("/api/v1/prompts?user_id=dev_test_user_456")
+    assert res.status_code == 200
+    assert isinstance(res.json(), list)
+
+
+def test_dual_auth_rejects_missing_credentials_in_production(monkeypatch):
+    """Verifies that in production, requests without API key or Bearer token are rejected with 401."""
+    monkeypatch.setenv("ENV", "production")
+    monkeypatch.setenv("ENVIRONMENT", "production")
+    res = client.get("/api/v1/prompts")
+    assert res.status_code == 401
+    assert "Authentication required" in res.json()["detail"]
+
+
+def test_dual_auth_rejects_invalid_api_key():
+    """Verifies that providing an invalid API key is rejected with 401."""
+    res = client.get("/api/v1/prompts", headers={"X-API-Key": "wrong_invalid_key"})
+    assert res.status_code == 401
+    assert "Invalid API key provided" in res.json()["detail"]
+
+
+def test_dual_auth_allows_valid_jwt_bearer_without_api_key(monkeypatch):
+    """Verifies that a valid Supabase JWT Bearer token grants access without any X-API-Key."""
+    import time
+    from tests.unit.test_jwt_auth import create_test_jwt
+
+    secret = "test-jwt-secret-key-1234567890"
+    monkeypatch.setenv("SUPABASE_JWT_SECRET", secret)
+    token = create_test_jwt({"sub": "supabase_auth_user_789", "exp": time.time() + 3600}, secret)
+
+    res = client.get(
+        "/api/v1/prompts",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    assert res.status_code == 200
+    assert isinstance(res.json(), list)
+
+
+def test_dual_auth_expired_bearer_with_dev_user_id(monkeypatch):
+    """Verifies that an expired Bearer token gracefully falls back to dev user_id in development mode."""
+    import time
+    from tests.unit.test_jwt_auth import create_test_jwt
+
+    monkeypatch.setenv("ENV", "development")
+    secret = "test-jwt-secret-key-1234567890"
+    monkeypatch.setenv("SUPABASE_JWT_SECRET", secret)
+    # Expired token
+    expired_token = create_test_jwt({"sub": "expired_user", "exp": time.time() - 3600}, secret)
+
+    res = client.get(
+        "/api/v1/prompts?user_id=dev_active_user",
+        headers={"Authorization": f"Bearer {expired_token}"}
+    )
+    assert res.status_code == 200
+    assert isinstance(res.json(), list)
+
+
