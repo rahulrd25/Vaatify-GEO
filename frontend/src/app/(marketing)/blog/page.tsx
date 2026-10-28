@@ -23,18 +23,18 @@ export default function BlogListPage() {
   const posts = getAllPosts();
 
   return (
-    <div className="py-16 md:py-24 bg-white text-slate-900 min-h-screen">
+    <div className="py-16 md:py-24 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-3xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 text-xs font-semibold mb-4">
             <BookOpen className="h-3.5 w-3.5 text-[#FE4D03]" />
             <span>GEO Research &amp; Guides</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950">
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
             Generative Engine Optimization Insights
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
             Latest frameworks, research data, and practical guides on how modern brands win citations across ChatGPT Search, Google AI Overviews, and Perplexity.
           </p>
         </div>
@@ -44,33 +44,33 @@ export default function BlogListPage() {
           {posts.map((post) => (
             <article
               key={post.slug}
-              className="p-6 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all flex flex-col justify-between shadow-2xs hover:shadow-xs"
+              className="p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between shadow-2xs hover:shadow-xs"
             >
               <div>
-                <div className="flex items-center justify-between text-[11px] text-slate-500 mb-3">
-                  <span className="px-2 py-0.5 rounded bg-orange-50 text-[#FE4D03] border border-orange-200/60 font-semibold uppercase tracking-wider text-[10px]">
+                <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-3">
+                  <span className="px-2 py-0.5 rounded bg-orange-50 dark:bg-orange-950/40 text-[#FE4D03] border border-orange-200/60 dark:border-orange-800/60 font-semibold uppercase tracking-wider text-[10px]">
                     {post.category}
                   </span>
                   <div className="flex items-center gap-1 font-medium">
-                    <Clock className="h-3 w-3 text-slate-400" />
+                    <Clock className="h-3 w-3 text-slate-400 dark:text-slate-500" />
                     <span>{post.readTime}</span>
                   </div>
                 </div>
 
-                <h2 className="text-lg font-bold text-slate-900 tracking-tight hover:text-[#FE4D03] transition-colors leading-snug">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight hover:text-[#FE4D03] dark:hover:text-[#FE4D03] transition-colors leading-snug">
                   <Link href={`/blog/${post.slug}`}>
                     {post.title}
                   </Link>
                 </h2>
 
-                <p className="mt-3 text-xs text-slate-600 leading-relaxed line-clamp-3">
+                <p className="mt-3 text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
                   {post.excerpt}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
-                  <Calendar className="h-3 w-3 text-slate-400" />
+              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                  <Calendar className="h-3 w-3 text-slate-400 dark:text-slate-500" />
                   <time dateTime={post.date}>
                     {new Date(post.date).toLocaleDateString('en-US', {
                       month: 'short',

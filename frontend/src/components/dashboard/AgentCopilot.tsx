@@ -67,7 +67,7 @@ function FormattedText({ text }: { text: string }) {
   const lines = text.split('\n');
 
   return (
-    <div className="space-y-2 text-sm leading-relaxed text-slate-800">
+    <div className="space-y-2 text-sm leading-relaxed text-slate-800 dark:text-slate-200">
       {lines.map((line, idx) => {
         const trimmed = line.trim();
         if (!trimmed) return <div key={idx} className="h-0.5" />;
@@ -75,14 +75,14 @@ function FormattedText({ text }: { text: string }) {
         // Markdown Headers
         if (trimmed.startsWith('### ')) {
           return (
-            <h4 key={idx} className="text-xs font-bold uppercase tracking-wider text-slate-900 pt-1 pb-0.5">
+            <h4 key={idx} className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white pt-1 pb-0.5">
               {renderInlineFormatting(trimmed.replace(/^###\s+/, ''))}
             </h4>
           );
         }
         if (trimmed.startsWith('## ') || trimmed.startsWith('# ')) {
           return (
-            <h3 key={idx} className="text-sm font-bold text-slate-900 pt-1.5 pb-0.5">
+            <h3 key={idx} className="text-sm font-bold text-slate-900 dark:text-white pt-1.5 pb-0.5">
               {renderInlineFormatting(trimmed.replace(/^#{1,2}\s+/, ''))}
             </h3>
           );
@@ -92,7 +92,7 @@ function FormattedText({ text }: { text: string }) {
         if (trimmed.startsWith('•') || trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
           const content = trimmed.replace(/^[•\-\*]\s*/, '');
           return (
-            <div key={idx} className="flex items-start gap-2 ml-1 text-slate-700">
+            <div key={idx} className="flex items-start gap-2 ml-1 text-slate-700 dark:text-slate-300">
               <span className="h-1.5 w-1.5 rounded-full bg-orange-600 mt-2 shrink-0" />
               <div>{renderInlineFormatting(content)}</div>
             </div>
@@ -103,7 +103,7 @@ function FormattedText({ text }: { text: string }) {
         const numMatch = trimmed.match(/^(\d+)\.\s*(.*)$/);
         if (numMatch) {
           return (
-            <div key={idx} className="flex items-start gap-2 ml-1 text-slate-700">
+            <div key={idx} className="flex items-start gap-2 ml-1 text-slate-700 dark:text-slate-300">
               <span className="font-semibold text-orange-600 shrink-0 font-mono text-xs mt-0.5">{numMatch[1]}.</span>
               <div>{renderInlineFormatting(numMatch[2])}</div>
             </div>
@@ -122,20 +122,20 @@ function renderInlineFormatting(str: string): ReactNode[] {
   return tokens.map((token, i) => {
     if (token.startsWith('**') && token.endsWith('**')) {
       return (
-        <strong key={i} className="font-semibold text-slate-900">
+        <strong key={i} className="font-semibold text-slate-900 dark:text-white">
           {token.slice(2, -2)}
         </strong>
       );
     }
     if (token.startsWith('`') && token.endsWith('`')) {
       return (
-        <code key={i} className="px-1.5 py-0.5 rounded bg-orange-50/70 text-orange-800 font-mono text-xs font-medium border border-orange-200/80">
+        <code key={i} className="px-1.5 py-0.5 rounded bg-orange-50/70 dark:bg-orange-950/40 text-orange-800 dark:text-orange-300 font-mono text-xs font-medium border border-orange-200/80 dark:border-orange-800/80">
           {token.slice(1, -1)}
         </code>
       );
     }
     if (token.startsWith('*') && token.endsWith('*')) {
-      return <em key={i} className="italic text-slate-600">{token.slice(1, -1)}</em>;
+      return <em key={i} className="italic text-slate-600 dark:text-slate-400">{token.slice(1, -1)}</em>;
     }
     return token;
   });
@@ -603,14 +603,14 @@ export default function AgentCopilot({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-[calc(100vh-10rem)] min-h-[520px] max-h-[750px] overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-[calc(100vh-10rem)] min-h-[520px] max-h-[750px] overflow-hidden">
       {/* Top Header Bar */}
-      <div className="px-6 py-3.5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
+      <div className="px-6 py-3.5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="h-6 w-6 rounded-md bg-orange-600 text-white flex items-center justify-center shadow-2xs">
             <Sparkles className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="text-xs font-semibold text-slate-900">AI Copilot</span>
+          <span className="text-xs font-semibold text-slate-900 dark:text-white">AI Copilot</span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -618,7 +618,7 @@ export default function AgentCopilot({
             <button
               onClick={handleClearHistory}
               title="Clear chat history"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-500 hover:text-slate-800 text-xs font-medium transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 text-xs font-medium transition-colors cursor-pointer"
             >
               <Trash2 className="h-3.5 w-3.5" />
               <span>Clear</span>
@@ -632,8 +632,8 @@ export default function AgentCopilot({
         {messages.length === 0 && (
           <div className="max-w-2xl mx-auto pt-6 pb-2 space-y-4">
             <div className="text-center space-y-1">
-              <h3 className="text-base font-bold text-slate-900">How can I help with {brandProfile.brand.name}?</h3>
-              <p className="text-xs text-slate-500">Select an action below or type your instruction.</p>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">How can I help with {brandProfile.brand.name}?</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Select an action below or type your instruction.</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
@@ -644,13 +644,13 @@ export default function AgentCopilot({
                     key={idx}
                     onClick={() => handleSendMessage(card.prompt)}
                     disabled={isProcessing}
-                    className="p-3.5 rounded-xl bg-slate-50 hover:bg-orange-50/40 border border-slate-200/80 hover:border-orange-200 text-left transition-all cursor-pointer group space-y-1"
+                    className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50/40 dark:hover:bg-orange-950/20 border border-slate-200/80 dark:border-slate-700/80 hover:border-orange-200 dark:hover:border-orange-800/50 text-left transition-all cursor-pointer group space-y-1"
                   >
-                    <div className="flex items-center gap-2 font-semibold text-xs text-slate-900 group-hover:text-orange-700">
+                    <div className="flex items-center gap-2 font-semibold text-xs text-slate-900 dark:text-slate-100 group-hover:text-orange-700 dark:group-hover:text-orange-400">
                       <IconComponent className="h-3.5 w-3.5 text-orange-600" />
                       <span>{card.title}</span>
                     </div>
-                    <p className="text-[11px] text-slate-500 line-clamp-1">{card.desc}</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">{card.desc}</p>
                   </button>
                 );
               })}
@@ -669,23 +669,23 @@ export default function AgentCopilot({
               </div>
             ) : (
               <div className="max-w-2xl w-full space-y-3">
-                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-slate-800 space-y-3">
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 text-slate-800 dark:text-slate-200 space-y-3">
                   <FormattedText text={msg.text} />
 
                   {/* Interactive Action Proposal Cards (Human in the Loop Confirmation) */}
                   {msg.proposals && msg.proposals.length > 0 && (
-                    <div className="space-y-2 pt-2 border-t border-slate-200/70">
-                      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                    <div className="space-y-2 pt-2 border-t border-slate-200/70 dark:border-slate-700/70">
+                      <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                         <span>Proposed Items ({msg.proposals.length})</span>
                         {msg.proposals.some((p) => p.status === 'pending') && msg.proposals.length > 1 && (
                           <button
                             onClick={() => handleSaveAllProposals(msg.id)}
                             disabled={savingAllMsgId === msg.id}
-                            className="text-orange-700 hover:text-orange-800 font-semibold cursor-pointer flex items-center gap-1 text-xs disabled:opacity-50"
+                            className="text-orange-700 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300 font-semibold cursor-pointer flex items-center gap-1 text-xs disabled:opacity-50"
                           >
                             {savingAllMsgId === msg.id ? (
                               <>
-                                <Loader2 className="h-3 w-3 animate-spin text-orange-700" />
+                                <Loader2 className="h-3 w-3 animate-spin text-orange-700 dark:text-orange-400" />
                                 <span>Saving All...</span>
                               </>
                             ) : (
@@ -702,7 +702,7 @@ export default function AgentCopilot({
                         {msg.proposals.map((prop) => (
                           <div
                             key={prop.id}
-                            className="p-3 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2"
+                            className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-2xs space-y-2"
                           >
                             {prop.isEditing ? (
                               <div className="space-y-2">
@@ -712,12 +712,12 @@ export default function AgentCopilot({
                                   onChange={(e) =>
                                     handleUpdateProposalText(msg.id, prop.id, e.target.value)
                                   }
-                                  className="w-full px-3 py-1.5 rounded-md bg-slate-50 border border-orange-500 text-xs text-slate-900 focus:outline-none"
+                                  className="w-full px-3 py-1.5 rounded-md bg-slate-50 dark:bg-slate-950 border border-orange-500 text-xs text-slate-900 dark:text-slate-100 focus:outline-none"
                                 />
                                 <div className="flex items-center justify-end gap-2">
                                   <button
                                     onClick={() => handleToggleEdit(msg.id, prop.id)}
-                                    className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium cursor-pointer"
+                                    className="px-2.5 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium cursor-pointer"
                                   >
                                     Done
                                   </button>
@@ -725,14 +725,14 @@ export default function AgentCopilot({
                               </div>
                             ) : (
                               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                                <div className="font-medium text-slate-900 flex-1">
+                                <div className="font-medium text-slate-900 dark:text-slate-100 flex-1">
                                   {prop.status === 'saved' ? (
-                                    <span className="text-emerald-700 font-semibold flex items-center gap-1.5">
-                                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                    <span className="text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
+                                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                                       {prop.title}
                                     </span>
                                   ) : (
-                                    <span className="text-slate-800">
+                                    <span className="text-slate-800 dark:text-slate-200">
                                       {prop.data.prompt_text || `${prop.data.name} (${prop.data.domain})`}
                                     </span>
                                   )}
@@ -742,7 +742,7 @@ export default function AgentCopilot({
                                   <div className="flex items-center gap-1.5 shrink-0">
                                     <button
                                       onClick={() => handleToggleEdit(msg.id, prop.id)}
-                                      className="px-2.5 py-1 rounded border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-medium cursor-pointer flex items-center gap-1"
+                                      className="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium cursor-pointer flex items-center gap-1"
                                       title="Edit text"
                                     >
                                       <Edit2 className="h-3 w-3" />
@@ -778,17 +778,17 @@ export default function AgentCopilot({
 
                   {/* Visual Metric Chips */}
                   {msg.chips && (
-                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/60">
+                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
                       {msg.chips.map((c, i) => (
                         <div
                           key={i}
                           className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border ${
                             c.highlight
-                              ? 'bg-orange-50 text-orange-800 border-orange-200'
-                              : 'bg-white text-slate-700 border-slate-200'
+                              ? 'bg-orange-50 dark:bg-orange-950/40 text-orange-800 dark:text-orange-300 border-orange-200 dark:border-orange-800'
+                              : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                           }`}
                         >
-                          <span className="text-slate-500 font-normal">{c.label}:</span>
+                          <span className="text-slate-500 dark:text-slate-400 font-normal">{c.label}:</span>
                           <span className="font-semibold">{c.value}</span>
                         </div>
                       ))}
@@ -797,37 +797,37 @@ export default function AgentCopilot({
 
                   {/* Tool Execution Card */}
                   {msg.toolCall && (
-                    <div className="p-3 rounded-xl bg-white border border-slate-200 text-left space-y-1 shadow-2xs mt-2">
+                    <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-left space-y-1 shadow-2xs mt-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-mono font-semibold text-slate-700 flex items-center gap-1.5">
+                        <span className="font-mono font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                           <Database className="h-3.5 w-3.5 text-orange-600" />
                           {msg.toolCall.name}
                         </span>
                         {msg.toolCall.status === 'running' && (
-                          <span className="flex items-center gap-1 text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          <span className="flex items-center gap-1 text-[11px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800">
                             <Loader2 className="h-3 w-3 animate-spin" />
                             Executing...
                           </span>
                         )}
                         {msg.toolCall.status === 'completed' && (
-                          <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
                             <CheckCircle2 className="h-3 w-3" />
                             Success
                           </span>
                         )}
                       </div>
-                      <p className="text-xs font-mono text-slate-500">{msg.toolCall.detail}</p>
+                      <p className="text-xs font-mono text-slate-500 dark:text-slate-400">{msg.toolCall.detail}</p>
                     </div>
                   )}
                 </div>
               </div>
             )}
-            <span className="text-[10px] text-slate-400 px-1 mt-1">{msg.timestamp}</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 px-1 mt-1">{msg.timestamp}</span>
           </div>
         ))}
 
         {isProcessing && (
-          <div className="flex items-center gap-2 text-xs text-slate-500 italic p-3 bg-slate-50 rounded-xl border border-slate-100 w-fit">
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 italic p-3 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-700/60 w-fit">
             <Loader2 className="h-4 w-4 animate-spin text-orange-600" />
             <span>Processing request...</span>
           </div>
@@ -836,8 +836,8 @@ export default function AgentCopilot({
       </div>
 
       {/* Spacious Floating Input Container (Fixed at Bottom) */}
-      <div className="p-4 bg-white border-t border-slate-100 shrink-0">
-        <div className="max-w-3xl mx-auto rounded-2xl border border-slate-200 bg-slate-50/50 p-2 focus-within:border-orange-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-orange-100 transition-all shadow-2xs">
+      <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shrink-0">
+        <div className="max-w-3xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-950/60 p-2 focus-within:border-orange-500 dark:focus-within:border-orange-500 focus-within:bg-white dark:focus-within:bg-slate-950 focus-within:ring-2 focus-within:ring-orange-100 dark:focus-within:ring-orange-950/30 transition-all shadow-2xs">
           <textarea
             ref={textareaRef}
             rows={2}
@@ -845,13 +845,13 @@ export default function AgentCopilot({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={`Ask a question or enter an instruction (e.g. "Suggest 3 buyer queries", "Add competitor: DevSquad", "Run evaluation")...`}
-            className="w-full px-3 py-1.5 bg-transparent border-0 text-slate-900 text-sm focus:outline-none resize-none placeholder:text-slate-400 leading-relaxed"
+            className="w-full px-3 py-1.5 bg-transparent border-0 text-slate-900 dark:text-slate-100 text-sm focus:outline-none resize-none placeholder:text-slate-400 dark:placeholder:text-slate-500 leading-relaxed"
           />
 
-          <div className="flex items-center justify-between px-2 pt-1.5 border-t border-slate-200/50 text-xs text-slate-400">
+          <div className="flex items-center justify-between px-2 pt-1.5 border-t border-slate-200/50 dark:border-slate-800 text-xs text-slate-400 dark:text-slate-500">
             <span className="flex items-center gap-1 text-[11px]">
-              <CornerDownLeft className="h-3 w-3 text-slate-400" />
-              <span>Press <strong className="font-semibold text-slate-600">Enter</strong> to send</span>
+              <CornerDownLeft className="h-3 w-3 text-slate-400 dark:text-slate-500" />
+              <span>Press <strong className="font-semibold text-slate-600 dark:text-slate-300">Enter</strong> to send</span>
             </span>
 
             <button
