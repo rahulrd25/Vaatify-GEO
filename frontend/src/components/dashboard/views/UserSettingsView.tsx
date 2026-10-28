@@ -85,12 +85,12 @@ export default function UserSettingsView({
   return (
     <div className="space-y-4 max-w-4xl">
       {/* Header */}
-      <div className="pb-3 border-b border-slate-200">
-        <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+      <div className="pb-3 border-b border-slate-200 dark:border-slate-800">
+        <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
           <User className="h-4 w-4 text-orange-600" />
           User Settings & Security
         </h2>
-        <p className="text-[11px] text-slate-500 mt-0.5">
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
           Manage your personal account credentials, security access, and workspace identity.
         </p>
       </div>
@@ -98,9 +98,9 @@ export default function UserSettingsView({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Card 1: Account Profile */}
         <div className="card-white rounded-lg p-5 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+          <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
             <Mail className="h-4 w-4 text-orange-600" />
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Account Profile
             </h3>
           </div>
@@ -108,12 +108,12 @@ export default function UserSettingsView({
           <div className="space-y-3 text-xs">
             {/* Email */}
             <div>
-              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+              <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                 Email Address
               </label>
-              <div className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded text-slate-800 font-medium">
+              <div className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded text-slate-800 dark:text-slate-200 font-medium">
                 <span className="truncate">{user?.email || 'N/A'}</span>
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 shrink-0">
                   <Check className="h-3 w-3" />
                   Verified
                 </span>
@@ -122,15 +122,15 @@ export default function UserSettingsView({
 
             {/* User UID */}
             <div>
-              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+              <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                 User ID (Tenant UID)
               </label>
-              <div className="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded font-mono text-[11px] text-slate-700">
+              <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded font-mono text-[11px] text-slate-700 dark:text-slate-300">
                 <span className="truncate mr-2">{user?.id || 'N/A'}</span>
                 <button
                   type="button"
                   onClick={handleCopyId}
-                  className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 rounded cursor-pointer transition-colors"
+                  className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded cursor-pointer transition-colors"
                   title="Copy User ID"
                 >
                   {copiedId ? (
@@ -144,12 +144,12 @@ export default function UserSettingsView({
 
             {/* Account Type */}
             <div>
-              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+              <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                 Account Classification
               </label>
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-slate-800 font-medium flex items-center justify-between">
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded text-slate-800 dark:text-slate-200 font-medium flex items-center justify-between">
                 <span>{user?.isWorkEmail ? 'Corporate Work Account' : 'Standard User Account'}</span>
-                <span className="text-[10px] text-slate-500 capitalize">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">
                   Role: Account Owner
                 </span>
               </div>
@@ -157,15 +157,15 @@ export default function UserSettingsView({
 
             {/* Associated Brand */}
             <div>
-              <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+              <label className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
                 Active Brand Workspace
               </label>
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded flex items-center gap-2 text-slate-800">
+              <div className="p-2.5 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded flex items-center gap-2 text-slate-800 dark:text-slate-200">
                 <Building className="h-4 w-4 text-orange-600 shrink-0" />
                 <div className="min-w-0">
                   <span className="font-semibold">{brandName || 'My Brand'}</span>
                   {brandDomain && (
-                    <span className="text-slate-500 text-[11px] ml-1.5 font-mono">
+                    <span className="text-slate-500 dark:text-slate-400 text-[11px] ml-1.5 font-mono">
                       ({brandDomain})
                     </span>
                   )}
@@ -177,20 +177,20 @@ export default function UserSettingsView({
 
         {/* Card 2: Password & Security */}
         <div className="card-white rounded-lg p-5 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+          <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
             <KeyRound className="h-4 w-4 text-orange-600" />
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Change Password
             </h3>
           </div>
 
           <form onSubmit={handleUpdatePassword} className="space-y-3 text-xs">
             <div>
-              <label htmlFor="new-password" className="text-[11px] font-semibold text-slate-700 block mb-1">
+              <label htmlFor="new-password" className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                 New Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                   <Lock className="h-3.5 w-3.5" />
                 </div>
                 <input
@@ -199,17 +199,17 @@ export default function UserSettingsView({
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Minimum 6 characters"
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded focus:bg-white focus:outline-hidden focus:border-orange-500 font-mono"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white dark:focus:bg-slate-950 focus:outline-hidden focus:border-orange-500 font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="confirm-password" className="text-[11px] font-semibold text-slate-700 block mb-1">
+              <label htmlFor="confirm-password" className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                 Confirm New Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                   <Lock className="h-3.5 w-3.5" />
                 </div>
                 <input
@@ -218,20 +218,20 @@ export default function UserSettingsView({
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repeat new password"
-                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded focus:bg-white focus:outline-hidden focus:border-orange-500 font-mono"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded focus:bg-white dark:focus:bg-slate-950 focus:outline-hidden focus:border-orange-500 font-mono"
                 />
               </div>
             </div>
 
             {passwordSuccess && (
-              <div className="p-2 bg-emerald-50 border border-emerald-200 rounded text-emerald-800 text-[11px] flex items-center gap-1.5">
+              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded text-emerald-800 dark:text-emerald-400 text-[11px] flex items-center gap-1.5">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
                 <span>{passwordSuccess}</span>
               </div>
             )}
 
             {passwordError && (
-              <div className="p-2 bg-red-50 border border-red-200 rounded text-red-700 text-[11px] flex items-center gap-1.5">
+              <div className="p-2 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded text-red-700 dark:text-red-400 text-[11px] flex items-center gap-1.5">
                 <AlertCircle className="h-3.5 w-3.5 text-red-600 shrink-0" />
                 <span>{passwordError}</span>
               </div>
@@ -257,8 +257,8 @@ export default function UserSettingsView({
           </form>
 
           {/* Session Security Indicator */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span className="flex items-center gap-1 text-slate-600">
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+            <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300">
               <Shield className="h-3.5 w-3.5 text-emerald-600" />
               Secure Session Active
             </span>
@@ -268,17 +268,17 @@ export default function UserSettingsView({
       </div>
 
       {/* Card 3: Session & Sign Out */}
-      <div className="card-white rounded-lg p-4 shadow-xs flex items-center justify-between border-slate-200">
+      <div className="card-white rounded-lg p-4 shadow-xs flex items-center justify-between border-slate-200 dark:border-slate-800">
         <div>
-          <h4 className="text-xs font-bold text-slate-900">Sign Out</h4>
-          <p className="text-[11px] text-slate-500 mt-0.5">
+          <h4 className="text-xs font-bold text-slate-900 dark:text-white">Sign Out</h4>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
             Log out of your current session on this device.
           </p>
         </div>
         <button
           type="button"
           onClick={onSignOut}
-          className="flex items-center gap-1.5 py-1.5 px-3 text-xs font-semibold text-red-700 hover:text-white bg-red-50 hover:bg-red-600 border border-red-200 hover:border-red-600 rounded transition-colors cursor-pointer shadow-2xs"
+          className="flex items-center gap-1.5 py-1.5 px-3 text-xs font-semibold text-red-700 hover:text-white bg-red-50 hover:bg-red-600 dark:text-red-400 dark:bg-red-950/40 dark:border-red-800 dark:hover:bg-red-600 dark:hover:text-white border border-red-200 rounded transition-colors cursor-pointer shadow-2xs"
         >
           <LogOut className="h-3.5 w-3.5" />
           <span>Sign Out</span>

@@ -46,7 +46,7 @@ export function Accordion({
 
   return (
     <AccordionContext.Provider value={{ expandedItem, toggleItem }}>
-      <div className={cn('divide-y divide-slate-200 border-y border-slate-200', className)} {...props}>
+      <div className={cn('divide-y divide-slate-200 dark:divide-slate-800 border-y border-slate-200 dark:border-slate-800', className)} {...props}>
         {children}
       </div>
     </AccordionContext.Provider>
@@ -90,7 +90,7 @@ export function AccordionTrigger({ className, children, ...props }: AccordionTri
       onClick={() => context.toggleItem(itemContext.value)}
       aria-expanded={isOpen}
       className={cn(
-        'flex w-full items-center justify-between py-4 text-left text-sm font-semibold text-slate-900 transition-all hover:text-[#FE4D03] cursor-pointer focus:outline-hidden',
+        'flex w-full items-center justify-between py-4 text-left text-sm font-semibold text-slate-900 dark:text-slate-100 transition-all hover:text-[#FE4D03] dark:hover:text-[#FE4D03] cursor-pointer focus:outline-hidden',
         className
       )}
       {...props}
@@ -98,7 +98,7 @@ export function AccordionTrigger({ className, children, ...props }: AccordionTri
       <span>{children}</span>
       <ChevronDown
         className={cn(
-          'h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200',
+          'h-4 w-4 shrink-0 text-slate-500 dark:text-slate-400 transition-transform duration-200',
           isOpen && 'rotate-180 text-[#FE4D03]'
         )}
       />
@@ -125,7 +125,7 @@ export function AccordionContent({ className, children, ...props }: AccordionCon
   return (
     <div
       role="region"
-      className={cn('pb-4 pt-1 text-xs text-slate-600 leading-relaxed animate-in fade-in-50 duration-200', className)}
+      className={cn('pb-4 pt-1 text-xs text-slate-600 dark:text-slate-300 leading-relaxed animate-in fade-in-50 duration-200', className)}
       {...props}
     >
       {children}

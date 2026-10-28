@@ -169,16 +169,16 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
   return (
     <div className="space-y-3 mb-8">
       {/* 1. Compact Unified Control Bar */}
-      <div className="card-white rounded-xl px-4 py-3 shadow-xs border border-slate-200 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="card-white rounded-xl px-4 py-3 shadow-xs border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Citation Logs</h3>
-          <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+          <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Citation Logs</h3>
+          <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
             {batches.length} batches • {runs.length} runs
           </span>
           {latestRun && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-slate-500 ml-1">
-              <Clock className="w-3 h-3 text-slate-400" />
-              Latest: <strong className="font-mono text-slate-700">{latestRun.time}</strong>
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 ml-1">
+              <Clock className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+              Latest: <strong className="font-mono text-slate-700 dark:text-slate-200">{latestRun.time}</strong>
             </span>
           )}
         </div>
@@ -189,7 +189,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
             id="engine-select"
             value={engineFilter}
             onChange={(e) => setEngineFilter(e.target.value)}
-            className="h-8 px-2.5 py-0.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-800 text-xs font-medium focus:outline-none focus:border-orange-500 focus:bg-white transition-colors cursor-pointer"
+            className="h-8 px-2.5 py-0.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-medium focus:outline-none focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 transition-colors cursor-pointer"
           >
             <option value="all">All Engines ({runs.length})</option>
             {engineOptions.map((eng) => (
@@ -206,7 +206,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search query..."
-              className="w-full h-8 pl-8 pr-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-orange-500 focus:bg-white transition-colors"
+              className="w-full h-8 pl-8 pr-2.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-orange-500 focus:bg-white dark:focus:bg-slate-900 transition-colors"
             />
           </div>
 
@@ -215,7 +215,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
               type="button"
               onClick={handleRefresh}
               title="Refresh citation logs"
-              className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shrink-0"
+              className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer shrink-0"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-orange-600' : ''}`} />
             </button>
@@ -225,8 +225,8 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
 
       {/* 2. Grouped Batch Cards */}
       {batches.length === 0 ? (
-        <div className="card-white rounded-xl p-12 text-center border border-slate-200">
-          <p className="text-xs text-slate-500">
+        <div className="card-white rounded-xl p-12 text-center border border-slate-200 dark:border-slate-800">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {runs.length === 0
               ? 'No evaluation batches recorded yet. Run a search evaluation from Copilot to start logging.'
               : 'No evaluation runs match your current search or engine filter.'}
@@ -240,49 +240,49 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
           return (
             <div
               key={batch.batchId}
-              className={`rounded-xl border shadow-xs overflow-hidden transition-all bg-white ${
-                isLatestBatch ? 'border-orange-200 ring-1 ring-orange-500/10' : 'border-slate-200'
+              className={`rounded-xl border shadow-xs overflow-hidden transition-all bg-white dark:bg-slate-900 ${
+                isLatestBatch ? 'border-orange-200 dark:border-orange-900/60 ring-1 ring-orange-500/10' : 'border-slate-200 dark:border-slate-800'
               }`}
             >
               {/* Batch Header Bar */}
               <div
                 onClick={() => toggleBatchCollapse(batch.batchId)}
-                className="px-5 py-3.5 bg-slate-50/70 hover:bg-slate-100/60 border-b border-slate-200/80 flex items-center justify-between gap-4 cursor-pointer select-none"
+                className="px-5 py-3.5 bg-slate-50/70 dark:bg-slate-900/90 hover:bg-slate-100/60 dark:hover:bg-slate-800/80 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between gap-4 cursor-pointer select-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900">
+                  <div className="flex items-center gap-1.5 font-bold text-xs text-slate-900 dark:text-white">
                     <Layers className="w-3.5 h-3.5 text-orange-600 shrink-0" />
                     <span>Batch #{batch.batchIndex}</span>
                     {isLatestBatch && (
-                      <span className="text-[10px] uppercase font-bold text-orange-700 bg-orange-100/80 px-2 py-0.2 rounded border border-orange-200">
+                      <span className="text-[10px] uppercase font-bold text-orange-700 dark:text-orange-300 bg-orange-100/80 dark:bg-orange-950/40 px-2 py-0.2 rounded border border-orange-200 dark:border-orange-800/60">
                         Latest Run
                       </span>
                     )}
                   </div>
 
-                  <span className="text-slate-300">•</span>
+                  <span className="text-slate-300 dark:text-slate-700">•</span>
 
-                  <div className="flex items-center gap-1.5 text-xs text-slate-600 font-mono">
-                    <Clock className="w-3 h-3 text-slate-400" />
-                    <span className="font-semibold text-slate-800">{batch.timeString}</span>
-                    <span className="text-slate-400 text-[11px]">({batch.dateString})</span>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 font-mono">
+                    <Clock className="w-3 h-3 text-slate-400 dark:text-slate-500" />
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{batch.timeString}</span>
+                    <span className="text-slate-400 dark:text-slate-500 text-[11px]">({batch.dateString})</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="hidden sm:flex items-center gap-2 text-xs">
-                    <span className="text-slate-500">
+                    <span className="text-slate-500 dark:text-slate-400">
                       <strong>{batch.totalCount}</strong> queries evaluated
                     </span>
-                    <span className="text-slate-300">•</span>
-                    <span className="font-semibold text-emerald-700">
+                    <span className="text-slate-300 dark:text-slate-700">•</span>
+                    <span className="font-semibold text-emerald-700 dark:text-emerald-400">
                       {batch.citedCount} citations ({batch.sov.toFixed(0)}% SoV)
                     </span>
                   </div>
 
                   <button
                     type="button"
-                    className="p-1 text-slate-400 hover:text-slate-700 rounded transition-colors"
+                    className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 rounded transition-colors"
                   >
                     {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
                   </button>
@@ -294,7 +294,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-50/40 text-slate-600 border-b border-slate-200/60 uppercase tracking-wider font-semibold text-[10px]">
+                      <tr className="bg-slate-50/40 dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 border-b border-slate-200/60 dark:border-slate-800 uppercase tracking-wider font-semibold text-[10px]">
                         <th className="py-2 px-3 w-10 text-center">#</th>
                         <th className="py-2 px-3">Target Query</th>
                         <th className="py-2 px-3">Engine</th>
@@ -305,42 +305,42 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
                         <th className="py-2 px-3">Competitors Cited</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-800">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-800 dark:text-slate-200">
                       {batch.runs.map((row, rIdx) => {
                         const timeInfo = formatExactTime(row.run_timestamp);
                         return (
-                          <tr key={`${row.id}-${row.engine}-${rIdx}`} className="hover:bg-slate-50/70 transition-colors">
-                            <td className="py-2.5 px-3 font-mono text-slate-400 font-semibold text-center text-[11px]">
+                          <tr key={`${row.id}-${row.engine}-${rIdx}`} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-colors">
+                            <td className="py-2.5 px-3 font-mono text-slate-400 dark:text-slate-500 font-semibold text-center text-[11px]">
                               #{rIdx + 1}
                             </td>
-                            <td className="py-2.5 px-3 max-w-xs sm:max-w-sm md:max-w-md font-medium text-slate-900 relative group cursor-default">
+                            <td className="py-2.5 px-3 max-w-xs sm:max-w-sm md:max-w-md font-medium text-slate-900 dark:text-white relative group cursor-default">
                               <div className="truncate" title={row.prompt_text}>
                                 {row.prompt_text}
                               </div>
-                              {/* Hover Card for Full Prompt (Light Theme, Clipless Positioning) */}
-                              <div className={`absolute left-3 ${rIdx === 0 ? 'top-full mt-1' : 'bottom-full mb-1'} z-50 hidden group-hover:block w-80 max-w-sm p-3 rounded-lg bg-white text-slate-800 text-xs font-normal shadow-lg pointer-events-none border border-slate-200 leading-relaxed whitespace-normal transition-all`}>
-                                <div className="font-semibold text-slate-500 text-[10px] uppercase tracking-wider mb-1">Target Query:</div>
-                                <div className="text-slate-900 font-medium">{row.prompt_text}</div>
+                              {/* Hover Card for Full Prompt */}
+                              <div className={`absolute left-3 ${rIdx === 0 ? 'top-full mt-1' : 'bottom-full mb-1'} z-50 hidden group-hover:block w-80 max-w-sm p-3 rounded-lg bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-xs font-normal shadow-lg pointer-events-none border border-slate-200 dark:border-slate-700 leading-relaxed whitespace-normal transition-all`}>
+                                <div className="font-semibold text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider mb-1">Target Query:</div>
+                                <div className="text-slate-900 dark:text-white font-medium">{row.prompt_text}</div>
                               </div>
                             </td>
                             <td className="py-2.5 px-3">
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 capitalize">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 capitalize">
                                 {row.engine === 'google_ai_overview' ? 'Google AI' : row.engine}
                               </span>
                             </td>
-                            <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600 whitespace-nowrap">
+                            <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-nowrap">
                               {timeInfo.time}
                             </td>
                             <td className="py-2.5 px-3 text-center">
                               {row.brand_mentioned ? (
-                                <span className="font-semibold text-emerald-700">Yes</span>
+                                <span className="font-semibold text-emerald-700 dark:text-emerald-400">Yes</span>
                               ) : (
                                 <span className="text-slate-400">No</span>
                               )}
                             </td>
                             <td className="py-2.5 px-3 text-center">
                               {row.brand_cited ? (
-                                <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200 text-[11px]">
+                                <span className="px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200 dark:border-emerald-800/60 text-[11px]">
                                   Cited
                                 </span>
                               ) : (
@@ -353,7 +353,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
                                   href={row.citation_url}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="inline-flex items-center gap-1 text-orange-700 hover:text-orange-900 hover:underline truncate max-w-[170px]"
+                                  className="inline-flex items-center gap-1 text-orange-700 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-300 hover:underline truncate max-w-[170px]"
                                   title={row.citation_url}
                                 >
                                   <span className="truncate">{row.citation_url.replace(/^https?:\/\//, '')}</span>
@@ -369,7 +369,7 @@ export default function PromptsExplorer({ runs = [], onRefresh }: PromptsExplore
                                   {row.competitors_cited.map((c, cIdx) => (
                                     <span
                                       key={cIdx}
-                                      className="px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded text-[10px] border border-slate-200 font-medium"
+                                      className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded text-[10px] border border-slate-200 dark:border-slate-700 font-medium"
                                     >
                                       {typeof c === 'string' ? c : c.name}
                                     </span>

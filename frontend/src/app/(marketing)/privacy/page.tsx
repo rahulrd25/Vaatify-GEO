@@ -19,35 +19,35 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="py-16 md:py-24 bg-white text-slate-900">
+    <div className="py-16 md:py-24 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-xs font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400 text-xs font-medium mb-4">
             <ShieldCheck className="h-3.5 w-3.5" />
             <span>UK GDPR &amp; Data Protection</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
             Privacy Policy
           </h1>
-          <p className="mt-3 text-sm sm:text-base text-slate-500 font-subheading">
+          <p className="mt-3 text-sm sm:text-base text-slate-500 dark:text-slate-400 font-subheading">
             Last updated: October 2026 &middot; Compliant with UK GDPR, Data Protection Act 2018 &amp; EU GDPR
           </p>
         </div>
 
         {/* Official Data Controller Registry Banner */}
-        <div className="mb-12 p-6 rounded-2xl border border-slate-200 bg-slate-50 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
+        <div className="mb-12 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-600 font-mono">
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 font-mono">
               <Building2 className="h-4 w-4 text-emerald-600" />
               <span>Registered Data Controller</span>
             </div>
-            <p className="text-base font-bold text-slate-950">
+            <p className="text-base font-bold text-slate-950 dark:text-white">
               DECCAN ADAPTIVE INTELLIGENCE LIMITED
             </p>
-            <p className="text-xs text-slate-600">
-              Private Limited Company &middot; United Kingdom &middot; Company Number: <strong className="text-slate-900 font-semibold">16694122</strong>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Private Limited Company &middot; United Kingdom &middot; Company Number: <strong className="text-slate-900 dark:text-white font-semibold">16694122</strong>
             </p>
           </div>
 
@@ -63,10 +63,10 @@ export default function PrivacyPage() {
         </div>
 
         {/* Privacy Content Body */}
-        <div className="space-y-10 text-sm sm:text-base text-slate-700 leading-relaxed font-subheading">
+        <div className="space-y-10 text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed font-subheading">
           {/* Section 1 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               1. Overview &amp; Data Controller
             </h2>
             <p>
@@ -79,35 +79,35 @@ export default function PrivacyPage() {
 
           {/* Section 2 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               2. Personal Data We Collect
             </h2>
             <p>Depending on how you interact with our platform, we collect the following categories of information:</p>
             <div className="space-y-3 pl-2">
-              <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <p className="font-semibold text-slate-900 text-sm">A. Account &amp; Identity Data</p>
-                <p className="text-xs text-slate-600 mt-1">
+              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <p className="font-semibold text-slate-900 dark:text-white text-sm">A. Account &amp; Identity Data</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                   When you register, we collect your work email address, user ID, corporate organization name, and authentication tokens. Passwords are cryptographically salted and hashed using industry-standard protocols.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <p className="font-semibold text-slate-900 text-sm">B. Workspace &amp; Brand Configuration Data</p>
-                <p className="text-xs text-slate-600 mt-1">
+              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <p className="font-semibold text-slate-900 dark:text-white text-sm">B. Workspace &amp; Brand Configuration Data</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                   Brand domains, target category keywords, tracked competitor domains, schedule frequencies, and notification webhook destinations (e.g. Slack/Email) that you configure.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <p className="font-semibold text-slate-900 text-sm">C. Technical &amp; Log Telemetry</p>
-                <p className="text-xs text-slate-600 mt-1">
+              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <p className="font-semibold text-slate-900 dark:text-white text-sm">C. Technical &amp; Log Telemetry</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                   IP addresses, browser type, operating system version, page response latency, and referring URLs collected to monitor platform security, API rate limiting, and system reliability.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <p className="font-semibold text-slate-900 text-sm">D. Billing Data</p>
-                <p className="text-xs text-slate-600 mt-1">
+              <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <p className="font-semibold text-slate-900 dark:text-white text-sm">D. Billing Data</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                   Payment records, transaction identifiers, and VAT details. We do not store raw credit card numbers on our servers; payments are processed securely by PCI-DSS Level 1 certified payment processors.
                 </p>
               </div>
@@ -116,24 +116,24 @@ export default function PrivacyPage() {
 
           {/* Section 3 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               3. AI Citation Data vs. Personal Data
             </h2>
             <p>
               <strong>Important Clarification:</strong> Vaatify GEO audits publicly available generative AI engine responses (e.g. OpenAI ChatGPT, Google AI Overviews, Perplexity, Anthropic Claude).
             </p>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-slate-400">
               The citation snippets, source URLs, and ranking distributions retrieved from search models consist of public web data and AI outputs. We do not collect, intercept, or inspect the private conversational histories of individuals searching on external platforms.
             </p>
           </section>
 
           {/* Section 4 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               4. Lawful Bases for Processing (UK GDPR Article 6)
             </h2>
             <p>We process your personal data under the following legal bases:</p>
-            <ul className="list-disc pl-6 space-y-1.5 text-slate-600">
+            <ul className="list-disc pl-6 space-y-1.5 text-slate-600 dark:text-slate-300">
               <li>
                 <strong>Performance of a Contract:</strong> To provision your user account, execute scheduled citation audits, deliver dashboard reporting, and process billing;
               </li>
@@ -148,7 +148,7 @@ export default function PrivacyPage() {
 
           {/* Section 5 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               5. Data Sharing &amp; Third-Party Sub-Processors
             </h2>
             <p>
@@ -156,34 +156,34 @@ export default function PrivacyPage() {
             </p>
             <p>We share personal data solely with trusted third-party sub-processors required to operate our service:</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50 text-xs">
-                <span className="font-semibold text-slate-900 block">Cloud Database &amp; Identity Infrastructure</span>
-                <span className="text-slate-500">Secure database hosting and encrypted authentication infrastructure (SOC-2 Type II certified).</span>
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs">
+                <span className="font-semibold text-slate-900 dark:text-white block">Cloud Database &amp; Identity Infrastructure</span>
+                <span className="text-slate-500 dark:text-slate-400">Secure database hosting and encrypted authentication infrastructure (SOC-2 Type II certified).</span>
               </div>
-              <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50 text-xs">
-                <span className="font-semibold text-slate-900 block">Cloud Application Hosting</span>
-                <span className="text-slate-500">Secure application hosting and background pipeline execution with end-to-end TLS encryption.</span>
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs">
+                <span className="font-semibold text-slate-900 dark:text-white block">Cloud Application Hosting</span>
+                <span className="text-slate-500 dark:text-slate-400">Secure application hosting and background pipeline execution with end-to-end TLS encryption.</span>
               </div>
-              <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50 text-xs">
-                <span className="font-semibold text-slate-900 block">Stripe</span>
-                <span className="text-slate-500">Payment gateway and subscription billing management.</span>
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs">
+                <span className="font-semibold text-slate-900 dark:text-white block">Stripe</span>
+                <span className="text-slate-500 dark:text-slate-400">Payment gateway and subscription billing management.</span>
               </div>
-              <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50 text-xs">
-                <span className="font-semibold text-slate-900 block">Transactional Email</span>
-                <span className="text-slate-500">Dispatching password resets, account confirmation links, and rank alerts.</span>
+              <div className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs">
+                <span className="font-semibold text-slate-900 dark:text-white block">Transactional Email</span>
+                <span className="text-slate-500 dark:text-slate-400">Dispatching password resets, account confirmation links, and rank alerts.</span>
               </div>
             </div>
           </section>
 
           {/* Section 6 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               6. Data Security &amp; Storage Standards
             </h2>
             <p>
               We enforce rigorous administrative, technical, and physical safeguards to protect your personal information:
             </p>
-            <ul className="list-disc pl-6 space-y-1.5 text-slate-600">
+            <ul className="list-disc pl-6 space-y-1.5 text-slate-600 dark:text-slate-300">
               <li>All network transmissions are protected using Transport Layer Security (TLS 1.3);</li>
               <li>Data stored in our primary data stores is encrypted at rest using AES-256;</li>
               <li>Administrative access requires mandatory multi-factor authentication (MFA) and least-privilege role boundaries;</li>
@@ -193,7 +193,7 @@ export default function PrivacyPage() {
 
           {/* Section 7 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               7. International Data Transfers
             </h2>
             <p>
@@ -203,11 +203,11 @@ export default function PrivacyPage() {
 
           {/* Section 8 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               8. Your Rights Under UK GDPR
             </h2>
             <p>Under United Kingdom data protection law, you possess key rights regarding your personal data:</p>
-            <ul className="list-disc pl-6 space-y-1.5 text-slate-600">
+            <ul className="list-disc pl-6 space-y-1.5 text-slate-600 dark:text-slate-300">
               <li><strong>Right of Access:</strong> Request a copy of the personal data we hold about you;</li>
               <li><strong>Right to Rectification:</strong> Request correction of inaccurate or incomplete data;</li>
               <li><strong>Right to Erasure (&quot;Right to be Forgotten&quot;):</strong> Request deletion of your personal data where no continuing lawful basis exists;</li>
@@ -215,14 +215,14 @@ export default function PrivacyPage() {
               <li><strong>Right to Data Portability:</strong> Obtain your data in a structured, machine-readable format;</li>
               <li><strong>Right to Object:</strong> Object to processing carried out under our legitimate interests.</li>
             </ul>
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
               To exercise any of these rights, email us at <a href="mailto:hello@vaatify.com" className="text-[#FE4D03] hover:underline font-medium">hello@vaatify.com</a>. We respond to all verified statutory requests within thirty (30) days.
             </p>
           </section>
 
           {/* Section 9 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               9. Cookies &amp; Tracking Technologies
             </h2>
             <p>
@@ -232,13 +232,13 @@ export default function PrivacyPage() {
 
           {/* Section 10 */}
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950">
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
               10. Data Protection Officer &amp; Contact Inquiries
             </h2>
             <p>
               If you have any questions, concerns, or requests regarding this Privacy Policy or our data protection practices, please contact our team:
             </p>
-            <div className="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs sm:text-sm">
+            <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 space-y-2 text-xs sm:text-sm">
               <p>
                 <strong>Data Controller:</strong> DECCAN ADAPTIVE INTELLIGENCE LIMITED
               </p>
@@ -269,8 +269,8 @@ export default function PrivacyPage() {
                 </a>
               </p>
             </div>
-            <p className="text-xs text-slate-500 mt-3">
-              You also have the statutory right to lodge a complaint with the UK supervisory authority, the <strong>Information Commissioner&apos;s Office (ICO)</strong>, at <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer" className="text-slate-700 underline hover:text-slate-900">ico.org.uk</a>.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-3">
+              You also have the statutory right to lodge a complaint with the UK supervisory authority, the <strong>Information Commissioner&apos;s Office (ICO)</strong>, at <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer" className="text-slate-700 dark:text-slate-300 underline hover:text-slate-900 dark:hover:text-white">ico.org.uk</a>.
             </p>
           </section>
         </div>

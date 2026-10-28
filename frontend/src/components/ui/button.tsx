@@ -21,9 +21,9 @@ export const buttonVariants = ({
 
   const variants = {
     default: "bg-[#FE4D03] text-white hover:bg-[#e04402] shadow-2xs",
-    outline: "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
-    secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200",
-    ghost: "hover:bg-slate-100 text-slate-700",
+    outline: "border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800",
+    secondary: "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-700",
+    ghost: "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300",
     link: "text-[#FE4D03] underline-offset-4 hover:underline",
   };
 

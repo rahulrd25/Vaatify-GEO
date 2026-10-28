@@ -33,9 +33,9 @@ export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center">
           <Loader2 className="h-8 w-8 text-[#FE4D03] animate-spin mb-3" />
-          <p className="text-xs text-slate-500 font-medium">Loading your brand workspace...</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading your brand workspace...</p>
         </div>
       }
     >
@@ -56,18 +56,18 @@ function DashboardContent() {
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center">
         <Loader2 className="h-8 w-8 text-[#FE4D03] animate-spin mb-3" />
-        <p className="text-xs text-slate-500 font-medium">Loading your brand workspace...</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Loading your brand workspace...</p>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center">
         <Loader2 className="h-8 w-8 text-[#FE4D03] animate-spin mb-3" />
-        <p className="text-xs text-slate-500 font-medium">Redirecting to sign in...</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Redirecting to sign in...</p>
       </div>
     );
   }
@@ -252,7 +252,7 @@ function MainDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex transition-colors">
       {/* 1. Left Sidebar Workspace Navigation */}
       <Sidebar
         currentTab={currentTab}
@@ -269,16 +269,16 @@ function MainDashboard() {
         <main className="flex-1 p-6 md:p-8 max-w-6xl w-full mx-auto">
           {/* Brand Setup Checklist / Welcome Banner */}
           {!onboardingCompleted && !isBannerDismissed && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 via-white to-orange-50/60 border border-orange-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+            <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 via-white to-orange-50/60 dark:from-orange-950/30 dark:via-slate-900 dark:to-orange-950/20 border border-orange-200 dark:border-orange-900/50 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
               <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-full bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
+                <div className="h-9 w-9 rounded-full bg-orange-100 dark:bg-orange-900/50 border border-orange-200 dark:border-orange-800 flex items-center justify-center shrink-0">
                   <Sparkles className="h-4.5 w-4.5 text-[#FE4D03]" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-slate-100">
                     Welcome! Set up your brand account to activate real-time AI citation tracking
                   </h3>
-                  <p className="text-[11px] text-slate-600 mt-0.5">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">
                     Configure your registered brand domain, benchmark competitors, and target buyer search queries.
                   </p>
                 </div>
