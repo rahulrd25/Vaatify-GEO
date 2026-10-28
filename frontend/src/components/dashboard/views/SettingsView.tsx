@@ -50,7 +50,9 @@ export default function SettingsView({
 
   const fetchSchedule = useCallback(async () => {
     try {
-      const headers: Record<string, string> = { 'X-API-Key': apiKey };
+      const headers: Record<string, string> = {
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
+      };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;
       const res = await fetch(apiUrl(`/api/v1/schedule${userId ? `?user_id=${encodeURIComponent(userId)}` : ''}`), {
@@ -93,7 +95,7 @@ export default function SettingsView({
       };
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;
@@ -121,7 +123,9 @@ export default function SettingsView({
     setIsTriggering(true);
     setScheduleMsg(null);
     try {
-      const headers: Record<string, string> = { 'X-API-Key': apiKey };
+      const headers: Record<string, string> = {
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
+      };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;
 
@@ -152,7 +156,7 @@ export default function SettingsView({
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;
@@ -190,7 +194,7 @@ export default function SettingsView({
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;
@@ -224,7 +228,7 @@ export default function SettingsView({
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;

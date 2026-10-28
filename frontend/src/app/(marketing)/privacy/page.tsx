@@ -157,12 +157,12 @@ export default function PrivacyPage() {
             <p>We share personal data solely with trusted third-party sub-processors required to operate our service:</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50 text-xs">
-                <span className="font-semibold text-slate-900 block">Supabase</span>
-                <span className="text-slate-500">Database and cryptographic authentication infrastructure (SOC-2 Type II certified).</span>
+                <span className="font-semibold text-slate-900 block">Cloud Database &amp; Identity Infrastructure</span>
+                <span className="text-slate-500">Secure database hosting and encrypted authentication infrastructure (SOC-2 Type II certified).</span>
               </div>
               <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50 text-xs">
-                <span className="font-semibold text-slate-900 block">Cloud Hosting (Fly.io / AWS)</span>
-                <span className="text-slate-500">Container orchestration and backend pipeline execution with end-to-end TLS encryption.</span>
+                <span className="font-semibold text-slate-900 block">Cloud Application Hosting</span>
+                <span className="text-slate-500">Secure application hosting and background pipeline execution with end-to-end TLS encryption.</span>
               </div>
               <div className="p-3.5 rounded-lg border border-slate-200 bg-slate-50 text-xs">
                 <span className="font-semibold text-slate-900 block">Stripe</span>

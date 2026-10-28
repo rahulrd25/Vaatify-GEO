@@ -377,7 +377,7 @@ export default function AuthView({ initialMode = 'signup' }: AuthViewProps) {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Authenticating with Supabase...</span>
+                      <span>{isSignUp ? 'Creating your workspace...' : 'Signing you in...'}</span>
                     </>
                   ) : (
                     <>

@@ -57,7 +57,7 @@ export default function QueriesView({
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;
@@ -91,7 +91,7 @@ export default function QueriesView({
     setDeactivatingId(id);
     try {
       const headers: Record<string, string> = {
-        'X-API-Key': apiKey,
+        ...(apiKey ? { 'X-API-Key': apiKey } : {}),
       };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       if (userId) headers['X-User-Id'] = userId;

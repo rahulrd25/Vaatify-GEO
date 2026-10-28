@@ -77,7 +77,18 @@ def verify_jwt_signature_hs256(token: str, secret: str) -> Dict[str, Any]:
     signing_input = f"{header_b64}.{payload_b64}".encode("ascii")
     expected_sig = hmac.new(secret.encode("utf-8"), signing_input, hashlib.sha256).digest()
 
-    if not hmac.compare_digest(expected_sig, actual_sig):
+    matched = hmac.compare_digest(expected_sig, actual_sig)
+    if not matched:
+        # Supabase generates base64-encoded JWT secrets; check base64-decoded bytes if applicable
+        try:
+            b64_secret = base64.b64decode(secret)
+            expected_sig_b64 = hmac.new(b64_secret, signing_input, hashlib.sha256).digest()
+            if hmac.compare_digest(expected_sig_b64, actual_sig):
+                matched = True
+        except Exception:
+            pass
+
+    if not matched:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token signature: cryptographic verification failed.",
