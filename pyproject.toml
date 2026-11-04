@@ -17,6 +17,7 @@ dependencies = [
     "typesafe-sdk>=0.7.2",
     "psycopg2-binary>=2.9.13",
     "playwright>=1.49.0",
+    "stripe>=11.0.0",
 ]
 
 [tool.uv]

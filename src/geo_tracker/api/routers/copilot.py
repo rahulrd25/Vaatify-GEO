@@ -31,6 +31,10 @@ def list_recommendations(
     session: Session = Depends(get_db_session)
 ):
     """Returns AI-generated recommendations to close content gaps and increase citation likelihood."""
+    if user_id:
+        from src.geo_tracker.billing.guards import check_copilot_access
+        check_copilot_access(session, user_id)
+
     query = session.query(AgentRecommendationModel).outerjoin(PromptModel, AgentRecommendationModel.prompt_id == PromptModel.id)
     if user_id:
         brand_profile_model = get_user_brand(session, user_id)
@@ -93,6 +97,10 @@ def agent_chat(
     session: Session = Depends(get_db_session)
 ):
     """Executes conversational Copilot reasoning with prompt injection guardrails and rate limiting."""
+    if user_id:
+        from src.geo_tracker.billing.guards import check_copilot_access
+        check_copilot_access(session, user_id)
+
     client_id = user_id or "copilot_user"
     rate_limiter.check_rate_limit(client_id=client_id, action="agent_chat", max_requests=30, window_seconds=60)
 
