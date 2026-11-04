@@ -131,6 +131,62 @@ class AgentRecommendationModel(Base):
 
     prompt: Mapped[Optional["PromptModel"]] = relationship("PromptModel", back_populates="recommendations")
 
+class SubscriptionModel(Base):
+    """
+    Tracks each user's current billing plan and Stripe subscription state.
+    This is the source of truth for all plan enforcement — never call Stripe
+    on a hot request path; read this table instead.
+    """
+    __tablename__ = "subscriptions"
+
+    id: Mapped[str] = mapped_column(String(50), primary_key=True, default=lambda: f"sub_{uuid.uuid4().hex[:12]}")
+    # One subscription row per user — enforced by UniqueConstraint
+    user_id: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
+
+    # "trial" | "starter" | "pro" | "enterprise"
+    plan: Mapped[str] = mapped_column(String(20), nullable=False, default="trial")
+
+    # "trialing" | "active" | "past_due" | "canceled" | "incomplete"
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="trialing")
+
+    stripe_customer_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, unique=True)
+    stripe_subscription_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, unique=True)
+
+    # Set on trial creation; when expired with no payment → plan drops to "starter"
+    trial_ends_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Updated on every invoice.payment_succeeded webhook
+    current_period_end: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+
+class StripeEventModel(Base):
+    """
+    Idempotency log for incoming Stripe webhooks.
+    Stripe delivers webhooks at-least-once; storing processed event IDs here
+    prevents double-processing on retries (e.g. upgrading a user twice).
+    PK = Stripe's own evt_... ID — guaranteed globally unique by Stripe.
+    """
+    __tablename__ = "stripe_events"
+
+    id: Mapped[str] = mapped_column(String(100), primary_key=True)  # evt_...
+    processed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+
 class MonitoringScheduleModel(Base):
     __tablename__ = "monitoring_schedules"
 

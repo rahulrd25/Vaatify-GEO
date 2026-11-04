@@ -72,6 +72,11 @@ def add_prompt(
     session: Session = Depends(get_db_session)
 ):
     """Adds a new query to the evaluation queue scoped to the tenant brand."""
+    # Enforce plan prompt limit before creating
+    if user_id:
+        from src.geo_tracker.billing.guards import check_prompt_limit
+        check_prompt_limit(session, user_id)
+
     repo = Repository(session)
     brand = get_user_brand(session, user_id)
     brand_name = request.brand or (brand.name if brand else "My Brand")

@@ -17,6 +17,7 @@ import {
 import { BrandProfile, MonitoringSchedule } from '@/types';
 import { apiUrl } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import { BillingCard } from '@/components/dashboard/BillingCard';
 
 interface SettingsViewProps {
   apiKey: string;
@@ -594,6 +595,11 @@ export default function SettingsView({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* 3. Subscription & Billing Tier Section (Full Width Below Matrix) */}
+      <div className="mt-4">
+        <BillingCard apiKey={apiKey} userId={userId} />
       </div>
     </div>
   );

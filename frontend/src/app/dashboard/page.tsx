@@ -16,8 +16,8 @@ import {
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import { useAuth } from '@/context/AuthContext';
 import { PromptItem, BrandProfile, RunItem, OverviewMetrics } from '@/types';
-import { apiUrl } from '@/lib/api';
-import { Loader2, Sparkles, ArrowRight, X } from 'lucide-react';
+import { apiUrl, fetchBillingStatus, createCheckoutSession, BillingStatus } from '@/lib/api';
+import { Loader2, Sparkles, ArrowRight, X, AlertCircle } from 'lucide-react';
 
 const VALID_TABS: NavTab[] = [
   'agent',
@@ -141,6 +141,23 @@ function MainDashboard() {
     competitors: [],
   });
 
+  // Billing state for banner and trial expiration enforcement
+  const [billing, setBilling] = useState<BillingStatus | null>(null);
+  const [isUpgrading, setIsUpgrading] = useState(false);
+
+  const fetchBilling = useCallback(async () => {
+    try {
+      const status = await fetchBillingStatus({
+        apiKey,
+        sessionToken,
+        userId: user?.id
+      });
+      setBilling(status);
+    } catch (e) {
+      console.error('Failed to fetch billing status:', e);
+    }
+  }, [apiKey, sessionToken, user]);
+
   const fetchBackendData = useCallback(async () => {
     const headers: Record<string, string> = {
       ...(apiKey ? { 'X-API-Key': apiKey } : {}),
@@ -200,13 +217,14 @@ function MainDashboard() {
     const load = async () => {
       if (isMounted) {
         await fetchBackendData();
+        await fetchBilling();
       }
     };
     load();
     return () => {
       isMounted = false;
     };
-  }, [fetchBackendData]);
+  }, [fetchBackendData, fetchBilling]);
 
   const handleTriggerRun = async () => {
     setIsLoading(true);
@@ -308,10 +326,65 @@ function MainDashboard() {
               onClose={() => setIsOnboardingOpen(false)}
               onComplete={() => {
                 fetchBackendData();
+                fetchBilling();
                 setOnboardingCompleted(true);
                 setIsOnboardingOpen(false);
               }}
             />
+          )}
+
+          {/* Hard Stop / Trial Expired Modal */}
+          {billing && billing.plan === 'expired' && (
+            <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-rose-100 dark:bg-rose-900 text-rose-600 dark:text-rose-300 shrink-0">
+                  <AlertCircle className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-rose-900 dark:text-rose-100">
+                    Your 14-day free trial has expired
+                  </h3>
+                  <p className="text-xs text-rose-700 dark:text-rose-300 mt-0.5">
+                    Your tracked queries and background AI monitoring scans are paused. Pick a plan to reactivate full coverage immediately.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  disabled={isUpgrading}
+                  onClick={async () => {
+                    setIsUpgrading(true);
+                    try {
+                      const url = await createCheckoutSession('starter', undefined, { apiKey, sessionToken, userId: user?.id });
+                      window.location.href = url;
+                    } catch {
+                      setIsUpgrading(false);
+                    }
+                  }}
+                  className="px-3.5 py-1.5 text-xs font-semibold rounded bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
+                >
+                  Starter ($49/mo)
+                </button>
+                <button
+                  type="button"
+                  disabled={isUpgrading}
+                  onClick={async () => {
+                    setIsUpgrading(true);
+                    try {
+                      const url = await createCheckoutSession('pro', undefined, { apiKey, sessionToken, userId: user?.id });
+                      window.location.href = url;
+                    } catch {
+                      setIsUpgrading(false);
+                    }
+                  }}
+                  className="px-3.5 py-1.5 text-xs font-bold rounded bg-[#FE4D03] hover:bg-[#e04402] text-white transition-colors cursor-pointer shadow-xs flex items-center gap-1"
+                >
+                  {isUpgrading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                  <span>Reactivate with Pro ($149/mo)</span>
+                </button>
+              </div>
+            </div>
           )}
 
           <div className={currentTab === 'agent' ? 'block' : 'hidden'}>
@@ -373,6 +446,7 @@ function MainDashboard() {
 
           <div className={currentTab === 'user_settings' ? 'block' : 'hidden'}>
             <UserSettingsView
+              apiKey={apiKey}
               user={user}
               brandName={brandProfile.brand.name}
               brandDomain={brandProfile.brand.domain}

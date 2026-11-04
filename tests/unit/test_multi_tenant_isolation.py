@@ -134,6 +134,18 @@ def test_tenant_data_isolation_between_two_users(setup_test_env):
     res_del_unauth = client.delete(f"/api/v1/prompts/{alpha_prompt_id}", headers=user_b_headers)
     assert res_del_unauth.status_code == 403
 
+    # User Beta onboards brand "BetaCorp" to provision active trial
+    onboard_payload_b = {
+        "user_id": "user_beta",
+        "brand_name": "BetaCorp",
+        "brand_domain": "betacorp.com",
+        "industry": "FinTech",
+        "competitors": [],
+        "prompts": []
+    }
+    res_onboard_b = client.post("/api/v1/onboarding/complete", json=onboard_payload_b)
+    assert res_onboard_b.status_code == 200
+
     # 8. User Beta adds their own prompt
     res_add_b = client.post("/api/v1/prompts", json={"prompt_text": "Beta query text"}, headers=user_b_headers)
     assert res_add_b.status_code == 201

@@ -17,12 +17,14 @@ import {
 } from 'lucide-react';
 import { UserAccount } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { BillingCard } from '@/components/dashboard/BillingCard';
 
 interface UserSettingsViewProps {
   user: UserAccount | null;
   brandName?: string;
   brandDomain?: string;
   onSignOut: () => void;
+  apiKey?: string;
 }
 
 export default function UserSettingsView({
@@ -30,6 +32,7 @@ export default function UserSettingsView({
   brandName,
   brandDomain,
   onSignOut,
+  apiKey,
 }: UserSettingsViewProps) {
   const [copiedId, setCopiedId] = useState(false);
   const [newPassword, setNewPassword] = useState('');
@@ -267,7 +270,10 @@ export default function UserSettingsView({
         </div>
       </div>
 
-      {/* Card 3: Session & Sign Out */}
+      {/* Card 3: Subscription & Billing Overview */}
+      <BillingCard apiKey={apiKey} userId={user?.id} />
+
+      {/* Card 4: Session & Sign Out */}
       <div className="card-white rounded-lg p-4 shadow-xs flex items-center justify-between border-slate-200 dark:border-slate-800">
         <div>
           <h4 className="text-xs font-bold text-slate-900 dark:text-white">Sign Out</h4>
