@@ -12,7 +12,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 
 from src.geo_tracker.storage.session import get_db_session
-from src.geo_tracker.storage.models import BrandProfileModel, CompetitorModel, PromptModel, MonitoringScheduleModel
+from src.geo_tracker.storage.models import (
+    BrandProfileModel,
+    CompetitorModel,
+    PromptModel,
+    MonitoringScheduleModel,
+    SubscriptionModel
+)
 from src.geo_tracker.api.utils.email_domain import extract_brand_from_email
 from src.geo_tracker.api.utils.tenant import get_current_user_id
 from src.geo_tracker.api.security.rate_limiter import rate_limiter
@@ -255,6 +261,21 @@ def complete_onboarding(
                 minute_utc=0,
                 is_active=True,
                 created_at=datetime.datetime.now(datetime.timezone.utc)
+            )
+        )
+
+    # 5. Provision 14-Day Free Pro Trial for newly onboarded user
+    existing_sub = session.scalar(
+        select(SubscriptionModel).where(SubscriptionModel.user_id == target_user_id)
+    )
+    if not existing_sub:
+        trial_end = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=14)
+        session.add(
+            SubscriptionModel(
+                user_id=target_user_id,
+                plan="pro",
+                status="trialing",
+                trial_ends_at=trial_end
             )
         )
 

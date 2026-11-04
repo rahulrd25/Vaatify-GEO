@@ -18,7 +18,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from src.geo_tracker.storage.models import Base, BrandProfileModel, PromptModel, AgentRecommendationModel
+from src.geo_tracker.storage.models import Base, BrandProfileModel, PromptModel, AgentRecommendationModel, SubscriptionModel
 from src.geo_tracker.storage.session import get_db_session
 from src.geo_tracker.api.app import create_app, custom_openapi
 from src.geo_tracker.config import is_production
@@ -214,6 +214,12 @@ def test_recommendations_tenant_isolation(setup_security_test_env):
             status="pending"
         )
         db.add(rec_a)
+
+        # Seed active pro subscriptions for both tenants to satisfy Copilot guard
+        sub_a = SubscriptionModel(id="sub_test_a", user_id="tenant_a", plan="pro", status="active")
+        sub_b = SubscriptionModel(id="sub_test_b", user_id="tenant_b", plan="pro", status="active")
+        db.add_all([sub_a, sub_b])
+
         db.commit()
     finally:
         db.close()

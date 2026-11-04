@@ -19,6 +19,7 @@ from src.geo_tracker.api.routers.metrics import router as metrics_router
 from src.geo_tracker.api.routers.copilot import router as copilot_router
 from src.geo_tracker.api.routers.schedule import router as schedule_router
 from src.geo_tracker.api.routers.onboarding import router as onboarding_router
+from src.geo_tracker.api.routers.billing import router as billing_router
 
 router = APIRouter()
 
@@ -50,3 +51,4 @@ router.include_router(pipeline_router)
 router.include_router(metrics_router)
 router.include_router(copilot_router)
 router.include_router(schedule_router)
+router.include_router(billing_router)
